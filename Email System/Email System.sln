@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Email System", "Email System\Email System.vcxproj", "{99E76E93-6709-484A-A7CA-4FCA27D808A7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{99E76E93-6709-484A-A7CA-4FCA27D808A7}.Debug|x64.ActiveCfg = Debug|x64
+		{99E76E93-6709-484A-A7CA-4FCA27D808A7}.Debug|x64.Build.0 = Debug|x64
+		{99E76E93-6709-484A-A7CA-4FCA27D808A7}.Debug|x86.ActiveCfg = Debug|Win32
+		{99E76E93-6709-484A-A7CA-4FCA27D808A7}.Debug|x86.Build.0 = Debug|Win32
+		{99E76E93-6709-484A-A7CA-4FCA27D808A7}.Release|x64.ActiveCfg = Release|x64
+		{99E76E93-6709-484A-A7CA-4FCA27D808A7}.Release|x64.Build.0 = Release|x64
+		{99E76E93-6709-484A-A7CA-4FCA27D808A7}.Release|x86.ActiveCfg = Release|Win32
+		{99E76E93-6709-484A-A7CA-4FCA27D808A7}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {28AAA6F9-1EA6-4755-A8D0-F07226A28DC1}
+	EndGlobalSection
+EndGlobal
