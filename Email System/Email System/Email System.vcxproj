@@ -135,6 +135,7 @@
   <ItemGroup>
     <None Include="Inbox.csv" />
     <None Include="Outbox.csv" />
+    <None Include="temp.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
