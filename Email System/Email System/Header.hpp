@@ -77,7 +77,6 @@ public:
 
 	void saveToFile(const string& filename)
 	{
-		// Open in write mode (not append) to overwrite existing content
 		ofstream file(filename);
 
 		if (!file.is_open()) {
@@ -292,3 +291,47 @@ void appendToFile(const string& filename, Email* email)
 	file.close();
 }
 
+const int MAX_EMAILS = 1000; 
+
+void checkForDuplicates(Stack& inbox) {
+	std::string emails[MAX_EMAILS];  
+	int emailCount = 0;
+	bool foundDuplicate = false;
+
+	Stack tempStack;
+
+	while (!inbox.isEmpty()) {
+		Email* email = inbox.pop();
+
+		std::string emailString = email->sender + "," + email->recipient + "," + email->subject + "," + email->body;
+
+		bool isDuplicate = false;
+		for (int i = 0; i < emailCount; i++) {
+			if (emails[i] == emailString) {
+				isDuplicate = true;
+				foundDuplicate = true;
+				std::cout << "Duplicate email found: " << email->subject << "\n";
+				break;
+			}
+		}
+
+		if (!isDuplicate) {
+			if (emailCount < MAX_EMAILS) {
+				emails[emailCount++] = emailString;
+			}
+			tempStack.push(email->sender, email->recipient, email->subject, email->body); 
+		}
+		else {
+			delete email;
+		}
+	}
+
+	while (!tempStack.isEmpty()) {
+		Email* email = tempStack.pop();
+		inbox.push(email->sender, email->recipient, email->subject, email->body);
+	}
+
+	if (!foundDuplicate) {
+		std::cout << "No duplicate emails found.\n";
+	}
+}

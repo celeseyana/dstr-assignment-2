@@ -1,5 +1,7 @@
 #include "Header.hpp";
 
+
+
 int main()
 {
     Stack inbox;
@@ -20,7 +22,8 @@ int main()
         std::cout << "1. View Most Recent Email in Inbox\n";
         std::cout << "2. Compose and Send a New Email\n";
         std::cout << "3. View and Send Email from Outbox\n";
-        std::cout << "4. Exit\n";
+        std::cout << "4. Spam\n";
+        std::cout << "5. Exit\n";
         std::cout << "Enter your choice: ";
         std::cin >> choice;
         std::cin.ignore(); // To handle the newline character after entering a choice
@@ -88,6 +91,11 @@ int main()
             break;
         }
         case 4: {
+            checkForDuplicates(inbox);
+            inbox.saveToFile("Inbox.csv");
+            break;
+        }
+        case 5: {
             while (!poppedEmails.isEmpty())
             {
                 Email* poppedEmail = poppedEmails.pop();
