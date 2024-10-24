@@ -315,31 +315,39 @@ void checkForDuplicates(Stack& inbox) {
 				std::cout << "Do you want to view this email? (1 = Yes, 0 = No): ";
 				int choice;
 				std::cin >> choice;
-				std::cin.ignore(); 
+				std::cin.ignore();
 
 				if (choice == 1) {
 					displayEmail(email);
 
-					std::cout << "Do you want to delete this email? (1 = Yes, 0 = No): ";
+					std::cout << "Do you want to remove this email? (1 = Yes, 0 = No): ";
 					std::cin >> choice;
-					std::cin.ignore(); 
+					std::cin.ignore();
 
 					if (choice == 1) {
 						std::cout << "Email deleted!\n";
 						delete email; 
-						continue; 
+						email = nullptr; 
+						break; 
 					}
 				}
 
+				if (email != nullptr) {
+					tempStack.push(email->sender, email->recipient, email->subject, email->body);
+				}
 				break; 
 			}
 		}
 
 		if (!isDuplicate) {
 			if (emailCount < MAX_EMAILS) {
-				emails[emailCount++] = emailString;
+				emails[emailCount++] = emailString; 
+				tempStack.push(email->sender, email->recipient, email->subject, email->body); 
 			}
-			tempStack.push(email->sender, email->recipient, email->subject, email->body);
+			else {
+				std::cerr << "Error: Maximum email limit reached.\n";
+				delete email; 
+			}
 		}
 		else {
 			delete email; 
@@ -349,7 +357,6 @@ void checkForDuplicates(Stack& inbox) {
 	while (!tempStack.isEmpty()) {
 		Email* email = tempStack.pop();
 		inbox.push(email->sender, email->recipient, email->subject, email->body);
-		delete email; 
 	}
 
 	if (!foundDuplicate) {
