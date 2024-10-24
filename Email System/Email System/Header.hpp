@@ -105,6 +105,10 @@ class Queue
 public:
 	Queue() : front (nullptr), rear(nullptr) {}
 
+	Email* getFront()
+	{
+		return front;
+	}
 	Email* peek() {
 		if (isEmpty()) {
 			cout << "Outbox is empty!\n";
@@ -193,6 +197,18 @@ public:
 		file.close();
 	}
 
+	void displayOutboxWithIndex() {
+		Email* current = front;
+		int index = 1;
+
+		while (current != nullptr) {
+			cout << index << ". Sender: " << current->sender
+				<< ", Recipient: " << current->recipient
+				<< ", Subject: " << current->subject << "\n";
+			current = current->next;
+			index++;
+		}
+	}
 };
 
 void writeEmail(Queue& outbox) {
@@ -277,6 +293,7 @@ void removeEmailFromFile(const string& filename, Email* emailToRemove) {
 		cout << "Email not found in " << filename << "\n";
 	}
 }
+
 void appendToFile(const string& filename, Email* email)
 {
 	ofstream file(filename, ios::app); // Open in append mode to add only the new email

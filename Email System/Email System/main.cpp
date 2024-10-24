@@ -53,40 +53,46 @@ int main()
             break;
         }
         case 3: {
-            int option;
-            // Peek at the next email to be sent from the outbox
-            Email* outgoingEmail = outbox.peek();
-            displayEmail(outgoingEmail);
-            while (true) {
-                cout << "Send email? 0 = No, 1 = Yes: ";
-                cin >> option;
+            // Display emails with indexes
+            cout << "Emails in Outbox:\n";
+            outbox.displayOutboxWithIndex();  // Now part of Queue class
 
-                if (cin.fail() || option < 0 || option > 1) {
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    cout << "Invalid input. Please enter 0 or 1.\n";
-                }
-                else {
-                    if (option == 0) {
-                        cout << "Email is not sent." << endl;
-                        break;
+            int emailIndex;
+            cout << "Enter the number of the email you want to send: ";
+            cin >> emailIndex;
+
+            // Dequeue the email at the specified index
+            if (emailIndex > 0) {
+                Queue tempQueue;
+                Email* current = outbox.getFront();
+                int currentIndex = 1;
+
+                while (current != nullptr) {
+                    if (currentIndex != emailIndex) {
+                        // Re-enqueue emails that are not the selected one
+                        tempQueue.enqueue(current->sender, current->recipient, current->subject, current->body);
                     }
                     else {
-                        cout << "Sending..." << endl;
-                        outgoingEmail = outbox.dequeue();  // Dequeue the email
-                        std::cout << "Dequeued Email: Sender: " << outgoingEmail->sender
-                            << ", Recipient: " << outgoingEmail->recipient
-                            << ", Subject: " << outgoingEmail->subject
-                            << ", Body: " << outgoingEmail->body << "\n";
-                        outbox.saveToFile("Outbox.csv");   // Update Outbox.
-
-                        delete outgoingEmail;  // Free memory after use
-                        break;
+                        // Display and "send" the selected email
+                        displayEmail(current);
+                        cout << "Sending email...\n";
+                        
                     }
+                    current = current->next;
+                    currentIndex++;
                 }
+
+                // Overwrite outbox with the updated queue (without the selected email)
+                outbox = tempQueue;  // Replace the old queue with the new one
+                outbox.saveToFile("Outbox.csv");  // Save updated queue to file
+            }
+            else {
+                cout << "Invalid email selection.\n";
             }
             break;
         }
+
+
         case 4: {
             while (!poppedEmails.isEmpty())
             {
