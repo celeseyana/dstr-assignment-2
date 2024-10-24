@@ -40,7 +40,7 @@ public:
 	//push email onto stack
 	void push(string sender, string recipient, string subject, string body)
 	{
-		Email* newEmail = new Email{sender, recipient, subject, body, top};
+		Email* newEmail = new Email{ sender, recipient, subject, body, top };
 		top = newEmail;
 	}
 
@@ -115,25 +115,29 @@ public:
 	}
 	void viewReceivedEmails(const string& userEmail)
 	{
-		Email* current = top;
+		Email* current = top;  // Assuming 'top' points to the first email
 		bool found = false;
 
-		cout << "Emails received by: " << userEmail << "\n";
+		// Traverse the linked list or stack/queue of emails
 		while (current != nullptr)
 		{
 			if (current->recipient == userEmail)
 			{
-				displayEmail(current);
+				displayEmail(current);  // Assuming this function displays email details
 				found = true;
 			}
+
+			// Move to the next email in the list
 			current = current->next;
 		}
 
+		// If no emails were found for the recipient
 		if (!found) {
 			cout << "No emails found where you are the recipient.\n";
 		}
-
 	}
+
+
 	void displayRecentEmails(Stack& inbox, const string& loggedInEmail) {
 		Email* current = inbox.peek(); // Start with the most recent email (top of the stack)
 		int index = 1;
@@ -160,7 +164,7 @@ class Queue
 	Email* front;
 	Email* rear;
 public:
-	Queue() : front (nullptr), rear(nullptr) {}
+	Queue() : front(nullptr), rear(nullptr) {}
 
 	Email* getFront()
 	{
@@ -254,16 +258,24 @@ public:
 		file.close();
 	}
 
-	void displayOutboxWithIndex() {
-		Email* current = front;
+	void displayOutboxWithIndex(const string& userEmail) {
+		Email* current = front;  // Assuming you have a front pointer for your queue
 		int index = 1;
 
+		cout << "Outbox Emails:\n";
 		while (current != nullptr) {
-			cout << index << ". Sender: " << current->sender
-				<< ", Recipient: " << current->recipient
-				<< ", Subject: " << current->subject << "\n";
-			current = current->next;
-			index++;
+			// Only display emails that belong to the logged-in user
+			if (current->sender == userEmail) {
+				cout << index << ". Sender: " << current->sender
+					<< ", Recipient: " << current->recipient
+					<< ", Subject: " << current->subject << endl;
+				index++;
+			}
+			current = current->next;  // Move to the next email
+		}
+
+		if (index == 1) {
+			cout << "No emails in outbox for " << userEmail << ".\n";
 		}
 	}
 };
@@ -391,8 +403,6 @@ public:
 	void loadUsers(const std::string& filename) {
 		std::ifstream file(filename);
 		std::string email, password, role;
-
-		std::cout << "Loading users from file...\n";
 		while (file.good())
 		{
 			// Read the sender, if the line is empty, skip it
@@ -512,23 +522,42 @@ public:
 	}
 };
 
-void writeEmail(Queue& outbox, const string& senderEmail) {
-	string sender, recipient, subject, body;
+void writeEmail(Queue& outbox, const string& email) {
+	string recipient, subject, body;
 
-	// Collect user input for the email
-	cout << "Compose a New Email\n";
-	cout << "Sender: " << senderEmail << endl;
-	cout << "Recipient: ";
-	getline(cin, recipient);
-	cout << "Subject: ";
-	getline(cin, subject);
-	cout << "Body: ";
-	getline(cin, body);
+	// Get recipient email
+	while (true) {
+		cout << "Enter recipient email: ";
+		getline(cin, recipient);
+		if (!recipient.empty()) {
+			break;  // Exit loop if input is valid
+		}
+		cout << "Recipient email cannot be empty. Please try again.\n";
+	}
 
-	// Enqueue the email to the outbox
-	outbox.enqueue(senderEmail, recipient, subject, body);
+	// Get subject
+	while (true) {
+		cout << "Enter subject: ";
+		getline(cin, subject);
+		if (!subject.empty()) {
+			break;  // Exit loop if input is valid
+		}
+		cout << "Subject cannot be empty. Please try again.\n";
+	}
 
-	cout << "Email composed and added to the outbox.\n";
+	// Get body
+	while (true) {
+		cout << "Enter body: ";
+		getline(cin, body);
+		if (!body.empty()) {
+			break;  // Exit loop if input is valid
+		}
+		cout << "Body cannot be empty. Please try again.\n";
+	}
+
+	// Assuming Email has a constructor that takes these parameters
+	outbox.enqueue(email, recipient, subject, body);
+	cout << "Email composed successfully!\n";
 }
 
 
@@ -630,4 +659,3 @@ bool login(const string& filename, string& role, string& email) {
 	cout << "Invalid email or password.\n";
 	return false;
 }
-
