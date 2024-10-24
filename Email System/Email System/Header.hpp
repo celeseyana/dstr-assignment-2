@@ -462,13 +462,12 @@ public:
 	}
 };
 
-void writeEmail(Queue& outbox) {
+void writeEmail(Queue& outbox, const string& senderEmail) {
 	string sender, recipient, subject, body;
 
 	// Collect user input for the email
 	cout << "Compose a New Email\n";
-	cout << "Sender: ";
-	getline(cin, sender);
+	cout << "Sender: " << senderEmail; << endl;
 	cout << "Recipient: ";
 	getline(cin, recipient);
 	cout << "Subject: ";
@@ -477,7 +476,7 @@ void writeEmail(Queue& outbox) {
 	getline(cin, body);
 
 	// Enqueue the email to the outbox
-	outbox.enqueue(sender, recipient, subject, body);
+	outbox.enqueue(senderEmail, recipient, subject, body);
 
 	cout << "Email composed and added to the outbox.\n";
 }
@@ -560,9 +559,9 @@ void appendToFile(const string& filename, Email* email)
 	file.close();
 }
 
-bool login(const string& filename, string& role) {
+bool login(const string& filename, string& role, string& email) {
 	ifstream file(filename);
-	string email, password, storedEmail, storedPassword, storedRole;
+	string password, storedEmail, storedPassword, storedRole;
 
 	if (!file.is_open()) {
 		cout << "Error opening login file.\n";
@@ -570,7 +569,7 @@ bool login(const string& filename, string& role) {
 	}
 
 	cout << "Enter email: ";
-	cin >> email;
+	cin >> email;;
 	cout << "Enter password: ";
 	cin >> password;
 
@@ -583,6 +582,7 @@ bool login(const string& filename, string& role) {
 		if (storedEmail == email && storedPassword == password)
 		{
 			role = storedRole;
+			email = storedEmail;
 			return true;
 		}
 	}
