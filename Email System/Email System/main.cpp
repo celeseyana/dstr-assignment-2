@@ -12,6 +12,7 @@ int main()
     // Load emails from CSV file
     inbox.loadFromFile("Inbox.csv");
     outbox.loadFromFile("Outbox.csv");
+    admin.loadUsers("login.txt");
 
     bool loginSuccess = login("login.txt", role);
 
@@ -115,10 +116,12 @@ int main()
             if (role == "admin")
             {
                 admin.addUser();
+                break;
             }
             else
             {
                 cout << "You do not have permission to add users." << endl;
+                break;
             }
         }
         break;
@@ -139,10 +142,12 @@ int main()
             if (role == "admin")
             {
                 admin.modifyUser();
+                break;
             }
             else
             {
                 cout << "You do not have permission to modify users." << endl;
+                break;
             }
         }
         case 7:
@@ -150,10 +155,12 @@ int main()
             if (role == "admin")
             {
                 admin.displayUsers();
+                break;
             }
             else
             {
                 cout << "You do not have permission to view all users" << endl;
+                break;
             }
         }
         case 0: {

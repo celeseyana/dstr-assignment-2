@@ -337,19 +337,28 @@ class Admin {
 public:
 	Admin() : head(nullptr) {}
 
-	// Load users from file into linked list
+	// Load users from file into linked list (temporary storage)
 	void loadUsers(const std::string& filename) {
 		std::ifstream file(filename);
 		std::string email, password, role;
 
-		while (file >> email >> password >> role) {
-			addUserToList(email, password, role);
+		std::cout << "Loading users from file...\n";
+		while (file.good())
+		{
+			// Read the sender, if the line is empty, skip it
+			if (!getline(file, email, ',')) continue;
+
+			// Ensure that the other fields are read properly, or skip the line
+			if (!getline(file, password, ',')) continue;
+			if (!getline(file, role, '\n')) continue;
+			addUserToList(email, password, role, false);  // Adding to list silently
+
 		}
 		file.close();
 	}
 
-	// Add user to linked list (temporary)
-	void addUserToList(const std::string& email, const std::string& password, const std::string& role) {
+	// Add user to linked list (temporary storage)
+	void addUserToList(const std::string& email, const std::string& password, const std::string& role, bool displayMessage = true) {
 		User* newUser = new User{ email, password, role, nullptr };
 		if (head == nullptr) {
 			head = newUser;
@@ -361,9 +370,12 @@ public:
 			}
 			current->next = newUser;
 		}
+		if (displayMessage) {
+			std::cout << "User added.\n";
+		}
 	}
 
-	// Add new user
+	// Add new user (temporary)
 	void addUser() {
 		std::string email, password, role;
 		std::cout << "Enter email: ";
@@ -374,10 +386,9 @@ public:
 		std::cin >> role;
 
 		addUserToList(email, password, role);
-		std::cout << "User added temporarily.\n";
 	}
 
-	// Delete user
+	// Delete user (temporary)
 	void deleteUser() {
 		std::string email;
 		std::cout << "Enter email of user to delete: ";
@@ -395,7 +406,7 @@ public:
 					prev->next = current->next;
 				}
 				delete current;
-				std::cout << "User deleted temporarily.\n";
+				std::cout << "User deleted.\n";
 				return;
 			}
 			prev = current;
@@ -404,7 +415,7 @@ public:
 		std::cout << "User not found.\n";
 	}
 
-	// Modify user
+	// Modify user (temporary)
 	void modifyUser() {
 		std::string email;
 		std::cout << "Enter email of user to modify: ";
@@ -417,7 +428,7 @@ public:
 				std::cin >> current->password;
 				std::cout << "Enter new role (admin/user): ";
 				std::cin >> current->role;
-				std::cout << "User modified temporarily.\n";
+				std::cout << "User modified.\n";
 				return;
 			}
 			current = current->next;
@@ -425,13 +436,18 @@ public:
 		std::cout << "User not found.\n";
 	}
 
-	// Display users (temporary list)
+	// Display all users from the temporary list
 	void displayUsers() {
 		User* current = head;
-		std::cout << "Temporary Users List:\n";
-		while (current != nullptr) {
-			std::cout << "Email: " << current->email << ", Role: " << current->role << "\n";
-			current = current->next;
+		if (current == nullptr) {
+			std::cout << "No users loaded.\n";
+		}
+		else {
+			std::cout << "\nCurrent Users: \n";
+			while (current != nullptr) {
+				std::cout << "Email: " << current->email << ", Role: " << current->role << "\n";
+				current = current->next;
+			}
 		}
 	}
 
