@@ -13,6 +13,13 @@ struct Email
 	Email* next; // for linking emails in the stack or queue
 };
 
+struct User {
+	std::string email;
+	std::string password;
+	std::string role;
+	User* next;
+};
+
 class Stack
 {
 	Email* top;
@@ -211,6 +218,234 @@ public:
 	}
 };
 
+//class Admin {
+//public:
+//	// Function to add a new user
+//	void addUser(const string& filename) {
+//		string email, password, role;
+//		cout << "Enter new user's email: ";
+//		getline(cin, email);
+//		cout << "Enter new user's password: ";
+//		getline(cin, password);
+//		cout << "Enter new user's role (user/admin): ";
+//		getline(cin, role);
+//
+//		ofstream file(filename, ios::app); // Open in append mode
+//		if (!file.is_open()) {
+//			cout << "Error: Unable to open the file.\n";
+//			return;
+//		}
+//
+//		file << email << "," << password << "," << role << "\n";
+//		file.close();
+//
+//		cout << "User added successfully.\n";
+//	}
+//
+//	// Function to delete a user
+//	void deleteUser(const string& filename) {
+//		string emailToDelete;
+//		cout << "Enter the email of the user to delete: ";
+//		getline(cin, emailToDelete);
+//
+//		ifstream file(filename);
+//		ofstream tempFile("temp_login.txt");
+//		if (!file.is_open() || !tempFile.is_open()) {
+//			cout << "Error: Unable to open the file.\n";
+//			return;
+//		}
+//
+//		string line;
+//		bool userFound = false;
+//		while (getline(file, line)) {
+//			size_t pos = line.find(',');
+//			string email = line.substr(0, pos);
+//
+//			if (email != emailToDelete) {
+//				tempFile << line << "\n";
+//			}
+//			else {
+//				userFound = true;
+//			}
+//		}
+//
+//		file.close();
+//		tempFile.close();
+//
+//		remove(filename.c_str());
+//		rename("temp_login.txt", filename.c_str());
+//
+//		if (userFound) {
+//			cout << "User deleted successfully.\n";
+//		}
+//		else {
+//			cout << "User not found.\n";
+//		}
+//	}
+//
+//	// Function to update user password or role
+//	void modifyUser(const string& filename) {
+//		string emailToModify;
+//		cout << "Enter the email of the user to modify: ";
+//		getline(cin, emailToModify);
+//
+//		ifstream file(filename);
+//		ofstream tempFile("temp_login.txt");
+//		if (!file.is_open() || !tempFile.is_open()) {
+//			cout << "Error: Unable to open the file.\n";
+//			return;
+//		}
+//
+//		string line;
+//		bool userFound = false;
+//		while (getline(file, line)) {
+//			size_t pos = line.find(',');
+//			string email = line.substr(0, pos);
+//
+//			if (email == emailToModify) {
+//				userFound = true;
+//				string newPassword, newRole;
+//				cout << "Enter new password: ";
+//				getline(cin, newPassword);
+//				cout << "Enter new role (user/admin): ";
+//				getline(cin, newRole);
+//				tempFile << email << " " << newPassword << " " << newRole << "\n";
+//			}
+//			else {
+//				tempFile << line << "\n";
+//			}
+//		}
+//
+//		file.close();
+//		tempFile.close();
+//
+//		remove(filename.c_str());
+//		rename("temp_login.txt", filename.c_str());
+//
+//		if (userFound) {
+//			cout << "User modified successfully.\n";
+//		}
+//		else {
+//			cout << "User not found.\n";
+//		}
+//	}
+//};
+
+class Admin {
+	User* head;  // Linked list to store users temporarily
+
+public:
+	Admin() : head(nullptr) {}
+
+	// Load users from file into linked list
+	void loadUsers(const std::string& filename) {
+		std::ifstream file(filename);
+		std::string email, password, role;
+
+		while (file >> email >> password >> role) {
+			addUserToList(email, password, role);
+		}
+		file.close();
+	}
+
+	// Add user to linked list (temporary)
+	void addUserToList(const std::string& email, const std::string& password, const std::string& role) {
+		User* newUser = new User{ email, password, role, nullptr };
+		if (head == nullptr) {
+			head = newUser;
+		}
+		else {
+			User* current = head;
+			while (current->next != nullptr) {
+				current = current->next;
+			}
+			current->next = newUser;
+		}
+	}
+
+	// Add new user
+	void addUser() {
+		std::string email, password, role;
+		std::cout << "Enter email: ";
+		std::cin >> email;
+		std::cout << "Enter password: ";
+		std::cin >> password;
+		std::cout << "Enter role (admin/user): ";
+		std::cin >> role;
+
+		addUserToList(email, password, role);
+		std::cout << "User added temporarily.\n";
+	}
+
+	// Delete user
+	void deleteUser() {
+		std::string email;
+		std::cout << "Enter email of user to delete: ";
+		std::cin >> email;
+
+		User* current = head;
+		User* prev = nullptr;
+
+		while (current != nullptr) {
+			if (current->email == email) {
+				if (prev == nullptr) {
+					head = current->next;
+				}
+				else {
+					prev->next = current->next;
+				}
+				delete current;
+				std::cout << "User deleted temporarily.\n";
+				return;
+			}
+			prev = current;
+			current = current->next;
+		}
+		std::cout << "User not found.\n";
+	}
+
+	// Modify user
+	void modifyUser() {
+		std::string email;
+		std::cout << "Enter email of user to modify: ";
+		std::cin >> email;
+
+		User* current = head;
+		while (current != nullptr) {
+			if (current->email == email) {
+				std::cout << "Enter new password: ";
+				std::cin >> current->password;
+				std::cout << "Enter new role (admin/user): ";
+				std::cin >> current->role;
+				std::cout << "User modified temporarily.\n";
+				return;
+			}
+			current = current->next;
+		}
+		std::cout << "User not found.\n";
+	}
+
+	// Display users (temporary list)
+	void displayUsers() {
+		User* current = head;
+		std::cout << "Temporary Users List:\n";
+		while (current != nullptr) {
+			std::cout << "Email: " << current->email << ", Role: " << current->role << "\n";
+			current = current->next;
+		}
+	}
+
+	// Destructor to free memory
+	~Admin() {
+		User* current = head;
+		while (current != nullptr) {
+			User* next = current->next;
+			delete current;
+			current = next;
+		}
+	}
+};
+
 void writeEmail(Queue& outbox) {
 	string sender, recipient, subject, body;
 
@@ -309,3 +544,34 @@ void appendToFile(const string& filename, Email* email)
 	file.close();
 }
 
+bool login(const string& filename, string& role) {
+	ifstream file(filename);
+	string email, password, storedEmail, storedPassword, storedRole;
+
+	if (!file.is_open()) {
+		cout << "Error opening login file.\n";
+		return false;
+	}
+
+	cout << "Enter email: ";
+	cin >> email;
+	cout << "Enter password: ";
+	cin >> password;
+
+	while (file.good())
+	{
+		getline(file, storedEmail, ',');
+		getline(file, storedPassword, ',');
+		getline(file, storedRole, '\n');
+
+		if (storedEmail == email && storedPassword == password)
+		{
+			role = storedRole;
+			return true;
+		}
+	}
+
+	file.close();
+	cout << "Invalid email or password.\n";
+	return false;
+}

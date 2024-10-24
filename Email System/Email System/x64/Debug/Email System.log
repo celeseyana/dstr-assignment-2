@@ -1,4 +1,1 @@
-﻿  main.cpp
-D:\Github\dstr-assignment-2\dstr-assignment-2\Email System\Email System\main.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Github\dstr-assignment-2\dstr-assignment-2\Email System\Email System\Header.hpp(34,12): warning C4129: '.': unrecognized character escape sequence
-  Email System.vcxproj -> D:\Github\dstr-assignment-2\dstr-assignment-2\Email System\x64\Debug\Email System.exe
+﻿  Email System.vcxproj -> D:\Github\dstr-assignment-2\dstr-assignment-2\Email System\x64\Debug\Email System.exe

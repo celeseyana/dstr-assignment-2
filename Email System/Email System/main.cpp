@@ -2,6 +2,8 @@
 
 int main()
 {
+    Admin admin;
+    string role;
     Stack inbox;
     Queue outbox;
     Stack poppedEmails;
@@ -10,6 +12,14 @@ int main()
     // Load emails from CSV file
     inbox.loadFromFile("Inbox.csv");
     outbox.loadFromFile("Outbox.csv");
+
+    bool loginSuccess = login("login.txt", role);
+
+    if (!loginSuccess)
+    {
+        cout << "Login failed!" << endl;
+        return 0;
+    }
 
     int choice;
     bool exit = false;
@@ -20,7 +30,16 @@ int main()
         std::cout << "1. View Most Recent Email in Inbox\n";
         std::cout << "2. Compose and Send a New Email\n";
         std::cout << "3. View and Send Email from Outbox\n";
-        std::cout << "4. Exit\n";
+
+        if (role == "admin")
+        {
+            cout << "4. Add User" << endl;
+            cout << "5. Delete User" << endl;
+            cout << "6. Modify User" << endl;
+            cout << "7. View users" << endl;
+        }
+
+        std::cout << "0. Exit\n";
         std::cout << "Enter your choice: ";
         std::cin >> choice;
         std::cin.ignore(); // To handle the newline character after entering a choice
@@ -91,9 +110,53 @@ int main()
             }
             break;
         }
+        case 4:
+        {
+            if (role == "admin")
+            {
+                admin.addUser();
+            }
+            else
+            {
+                cout << "You do not have permission to add users." << endl;
+            }
+        }
+        break;
 
-
-        case 4: {
+        case 5:
+        {
+            if (role == "admin")
+            {
+                admin.deleteUser();
+            }
+            else
+            {
+                cout << "You do not have permission to delete users." << endl;
+            }
+        }
+        case 6:
+        {
+            if (role == "admin")
+            {
+                admin.modifyUser();
+            }
+            else
+            {
+                cout << "You do not have permission to modify users." << endl;
+            }
+        }
+        case 7:
+        {
+            if (role == "admin")
+            {
+                admin.displayUsers();
+            }
+            else
+            {
+                cout << "You do not have permission to view all users" << endl;
+            }
+        }
+        case 0: {
             while (!poppedEmails.isEmpty())
             {
                 Email* poppedEmail = poppedEmails.pop();
