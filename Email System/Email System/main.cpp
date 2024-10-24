@@ -28,15 +28,16 @@ int main() {
         // Basic menu for the user
         cout << "Welcome " << email << "!" << endl;
         std::cout << "Email System\n";
-        std::cout << "1. View Most Recent Email in Inbox\n";
-        std::cout << "2. Compose and Send a New Email\n";
-        std::cout << "3. View and Send Email from Outbox\n";
+        cout << "1. View all your emails" << endl;
+        std::cout << "2. View Most Recent Email in Inbox\n";
+        std::cout << "3. Compose and Send a New Email\n";
+        std::cout << "4. View and Send Email from Outbox\n";
 
         if (role == "admin") {
-            cout << "4. Add User" << endl;
-            cout << "5. Delete User" << endl;
-            cout << "6. Modify User" << endl;
-            cout << "7. View users" << endl;
+            cout << "5. Add User" << endl;
+            cout << "6. Delete User" << endl;
+            cout << "7. Modify User" << endl;
+            cout << "8. View users" << endl;
         }
 
         std::cout << "0. Exit\n";
@@ -45,8 +46,13 @@ int main() {
         std::cin.ignore(); // To handle the newline character after entering a choice
 
         switch (choice) {
-        case 1: {
-            if (!inbox.isEmpty()) {
+        case 1:
+        {
+            inbox.viewReceivedEmails(email);
+            break;
+        }
+        case 2: {
+            /*if (!inbox.isEmpty()) {
                 Email* recentEmail = inbox.peek();
                 if (recentEmail != nullptr) {
                     displayEmail(recentEmail);
@@ -55,15 +61,17 @@ int main() {
             else {
                 cout << "Inbox is empty!" << endl;
             }
+            break;*/
+            inbox.displayRecentEmails(inbox, email);
             break;
         }
-        case 2: {
+        case 3: {
             // Compose and enqueue an email to the outbox
             writeEmail(outbox, email);
             Email* newEmail = outbox.getRear();
             break;
         }
-        case 3: {
+        case 4: {
             // Display emails with indexes
             cout << "Emails in Outbox:\n";
             outbox.displayOutboxWithIndex();
@@ -100,7 +108,7 @@ int main() {
             }
             break;
         }
-        case 4: {
+        case 5: {
             if (role == "admin") {
                 admin.addUser();
             }
@@ -109,7 +117,7 @@ int main() {
             }
             break;
         }
-        case 5: {
+        case 6: {
             if (role == "admin") {
                 admin.deleteUser();
             }
@@ -118,7 +126,7 @@ int main() {
             }
             break;
         }
-        case 6: {
+        case 7: {
             if (role == "admin") {
                 admin.modifyUser();
             }
@@ -127,7 +135,7 @@ int main() {
             }
             break;
         }
-        case 7: {
+        case 8: {
             if (role == "admin") {
                 admin.displayUsers();
             }

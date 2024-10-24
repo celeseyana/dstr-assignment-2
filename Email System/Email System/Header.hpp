@@ -19,7 +19,18 @@ struct User {
 	std::string role;
 	User* next;
 };
-
+void displayEmail(Email* email) {
+	if (email == nullptr) {
+		cout << "No email to display.\n";
+		return;
+	}
+	cout << "\n----- Email -----\n";
+	cout << "Sender: " << email->sender << "\n";
+	cout << "Recipient: " << email->recipient << "\n";
+	cout << "Subject: " << email->subject << "\n";
+	cout << "Body: " << email->body << "\n";
+	cout << "-----------------\n\n";
+}
 class Stack
 {
 	Email* top;
@@ -102,7 +113,46 @@ public:
 
 		file.close();
 	}
+	void viewReceivedEmails(const string& userEmail)
+	{
+		Email* current = top;
+		bool found = false;
 
+		cout << "Emails received by: " << userEmail << "\n";
+		while (current != nullptr)
+		{
+			if (current->recipient == userEmail)
+			{
+				displayEmail(current);
+				found = true;
+			}
+			current = current->next;
+		}
+
+		if (!found) {
+			cout << "No emails found where you are the recipient.\n";
+		}
+
+	}
+	void displayRecentEmails(Stack& inbox, const string& loggedInEmail) {
+		Email* current = inbox.peek(); // Start with the most recent email (top of the stack)
+		int index = 1;
+
+		// Loop through the inbox stack and only display emails where the recipient is the logged-in user
+		while (current != nullptr) {
+			if (current->recipient == loggedInEmail) {
+				cout << index << ". Sender: " << current->sender << endl;
+				cout << "Subject: " << current->subject << endl;
+				cout << "Body: " << current->body << endl;
+				index++;
+			}
+			current = current->next; // Move to the next email in the stack
+		}
+
+		if (index == 1) {
+			cout << "No emails found for " << loggedInEmail << ".\n";
+		}
+	}
 };
 
 class Queue
@@ -467,7 +517,7 @@ void writeEmail(Queue& outbox, const string& senderEmail) {
 
 	// Collect user input for the email
 	cout << "Compose a New Email\n";
-	cout << "Sender: " << senderEmail; << endl;
+	cout << "Sender: " << senderEmail << endl;
 	cout << "Recipient: ";
 	getline(cin, recipient);
 	cout << "Subject: ";
@@ -481,18 +531,7 @@ void writeEmail(Queue& outbox, const string& senderEmail) {
 	cout << "Email composed and added to the outbox.\n";
 }
 
-void displayEmail(Email* email) {
-	if (email == nullptr) {
-		cout << "No email to display.\n";
-		return;
-	}
-	cout << "\n----- Email -----\n";
-	cout << "Sender: " << email->sender << "\n";
-	cout << "Recipient: " << email->recipient << "\n";
-	cout << "Subject: " << email->subject << "\n";
-	cout << "Body: " << email->body << "\n";
-	cout << "-----------------\n\n";
-}
+
 
 void removeEmailFromFile(const string& filename, Email* emailToRemove) {
 	ifstream file(filename);
@@ -591,3 +630,4 @@ bool login(const string& filename, string& role, string& email) {
 	cout << "Invalid email or password.\n";
 	return false;
 }
+
