@@ -294,7 +294,7 @@ void appendToFile(const string& filename, Email* email)
 const int MAX_EMAILS = 1000; 
 
 void checkForDuplicates(Stack& inbox) {
-	std::string emails[MAX_EMAILS];  
+	std::string emails[MAX_EMAILS];
 	int emailCount = 0;
 	bool foundDuplicate = false;
 
@@ -311,7 +311,27 @@ void checkForDuplicates(Stack& inbox) {
 				isDuplicate = true;
 				foundDuplicate = true;
 				std::cout << "Duplicate email found: " << email->subject << "\n";
-				break;
+
+				std::cout << "Do you want to view this email? (1 = Yes, 0 = No): ";
+				int choice;
+				std::cin >> choice;
+				std::cin.ignore(); 
+
+				if (choice == 1) {
+					displayEmail(email);
+
+					std::cout << "Do you want to delete this email? (1 = Yes, 0 = No): ";
+					std::cin >> choice;
+					std::cin.ignore(); 
+
+					if (choice == 1) {
+						std::cout << "Email deleted!\n";
+						delete email; 
+						continue; 
+					}
+				}
+
+				break; 
 			}
 		}
 
@@ -319,16 +339,17 @@ void checkForDuplicates(Stack& inbox) {
 			if (emailCount < MAX_EMAILS) {
 				emails[emailCount++] = emailString;
 			}
-			tempStack.push(email->sender, email->recipient, email->subject, email->body); 
+			tempStack.push(email->sender, email->recipient, email->subject, email->body);
 		}
 		else {
-			delete email;
+			delete email; 
 		}
 	}
 
 	while (!tempStack.isEmpty()) {
 		Email* email = tempStack.pop();
 		inbox.push(email->sender, email->recipient, email->subject, email->body);
+		delete email; 
 	}
 
 	if (!foundDuplicate) {
