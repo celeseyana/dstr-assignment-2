@@ -37,15 +37,16 @@ int main() {
             cout << "2. View Most Recent Email in Inbox\n";
             cout << "3. Compose and Send a New Email\n";
             cout << "4. View and Send Email from Outbox\n";
+            cout << "5. Spam Inbox\n";
 
             if (role == "admin") {
-                cout << "5. Add User\n";
-                cout << "6. Delete User\n";
-                cout << "7. Modify User\n";
-                cout << "8. View users\n";
+                cout << "6. Add User\n";
+                cout << "7. Delete User\n";
+                cout << "8. Modify User\n";
+                cout << "9. View users\n";
             }
 
-            cout << "9. Log out\n";
+            cout << "10. Log out\n";
             cout << "0. Exit\n";
             cout << "Enter your choice: ";
 
@@ -110,6 +111,11 @@ int main() {
                 break;
             }
             case 5: {
+                checkForDuplicates(inbox);
+                inbox.saveToFile("Inbox.csv");
+                break;
+            }
+            case 6: {
                 if (role == "admin") {
                     admin.addUser();  // Admin adds a new user
                 }
@@ -118,7 +124,7 @@ int main() {
                 }
                 break;
             }
-            case 6: {
+            case 7: {
                 if (role == "admin") {
                     admin.deleteUser();  // Admin deletes a user
                 }
@@ -127,7 +133,7 @@ int main() {
                 }
                 break;
             }
-            case 7: {
+            case 8: {
                 if (role == "admin") {
                     admin.modifyUser();  // Admin modifies a user
                 }
@@ -136,7 +142,7 @@ int main() {
                 }
                 break;
             }
-            case 8: {
+            case 9: {
                 if (role == "admin") {
                     admin.displayUsers();  // Admin views all users
                 }
@@ -145,7 +151,7 @@ int main() {
                 }
                 break;
             }
-            case 9: {
+            case 10: {
                 // Log out and return to login screen
                 isLoggedIn = false;
                 break;

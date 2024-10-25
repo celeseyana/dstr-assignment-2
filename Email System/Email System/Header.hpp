@@ -561,3 +561,76 @@ bool login(const string& filename, string& role, string& userEmail) {
 	cout << "Invalid email or password.\n";
 	return false;
 }
+
+const int MAX_EMAILS = 1000;
+
+void checkForDuplicates(Stack& inbox) {
+	std::string emails[MAX_EMAILS];
+	int emailCount = 0;
+	bool foundDuplicate = false;
+
+	Stack tempStack;
+
+	while (!inbox.isEmpty()) {
+		Email* email = inbox.pop();
+
+		std::string emailString = email->sender + "," + email->recipient + "," + email->subject + "," + email->body;
+
+		bool isDuplicate = false;
+		for (int i = 0; i < emailCount; i++) {
+			if (emails[i] == emailString) {
+				isDuplicate = true;
+				foundDuplicate = true;
+				std::cout << "Duplicate email found: " << email->subject << "\n";
+
+				std::cout << "Do you want to view this email? (1 = Yes, 0 = No): ";
+				int choice;
+				std::cin >> choice;
+				std::cin.ignore();
+
+				if (choice == 1) {
+					displayEmail(email);
+
+					std::cout << "Do you want to remove this email? (1 = Yes, 0 = No): ";
+					std::cin >> choice;
+					std::cin.ignore();
+
+					if (choice == 1) {
+						std::cout << "Email deleted!\n";
+						delete email;
+						email = nullptr;
+						break;
+					}
+				}
+
+				if (email != nullptr) {
+					tempStack.push(email->sender, email->recipient, email->subject, email->body);
+				}
+				break;
+			}
+		}
+
+		if (!isDuplicate) {
+			if (emailCount < MAX_EMAILS) {
+				emails[emailCount++] = emailString;
+				tempStack.push(email->sender, email->recipient, email->subject, email->body);
+			}
+			else {
+				std::cerr << "Error: Maximum email limit reached.\n";
+				delete email;
+			}
+		}
+		else {
+			delete email;
+		}
+	}
+
+	while (!tempStack.isEmpty()) {
+		Email* email = tempStack.pop();
+		inbox.push(email->sender, email->recipient, email->subject, email->body);
+	}
+
+	if (!foundDuplicate) {
+		std::cout << "No duplicate emails found.\n";
+	}
+}
