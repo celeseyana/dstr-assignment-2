@@ -24,12 +24,12 @@ void displayEmail(Email* email) {
 		cout << "No email to display.\n";
 		return;
 	}
-	cout << "\n----- Email -----\n";
+	cout << "\n---------- Email ----------\n";
 	cout << "Sender: " << email->sender << "\n";
 	cout << "Recipient: " << email->recipient << "\n";
 	cout << "Subject: " << email->subject << "\n";
 	cout << "Body: " << email->body << "\n";
-	cout << "-----------------\n\n";
+	cout << "-----------------------------\n\n";
 }
 class Stack
 {
@@ -143,18 +143,22 @@ public:
 		int index = 1;
 
 		// Loop through the inbox stack and only display emails where the recipient is the logged-in user
-		while (current != nullptr) {
-			if (current->recipient == loggedInEmail) {
-				cout << index << ". Sender: " << current->sender << endl;
-				cout << "Subject: " << current->subject << endl;
-				cout << "Body: " << current->body << endl;
-				index++;
+		while (index < 1)
+		{
+			while (current != nullptr) {
+				if (current->recipient == loggedInEmail) {
+					cout << "Email No." << index << endl;
+					cout << ". Sender: " << current->sender << endl;
+					cout << "Subject: " << current->subject << endl;
+					cout << "Body: " << current->body << endl;
+					index++;
+				}
+				current = current->next; // Move to the next email in the stack
 			}
-			current = current->next; // Move to the next email in the stack
-		}
 
-		if (index == 1) {
-			cout << "No emails found for " << loggedInEmail << ".\n";
+			if (index == 1) {
+				cout << "No emails found for " << loggedInEmail << ".\n";
+			}
 		}
 	}
 };
@@ -165,6 +169,17 @@ class Queue
 	Email* rear;
 public:
 	Queue() : front(nullptr), rear(nullptr) {}
+
+	void clear() {
+		Email* current = front;
+		while (current != nullptr) {
+			Email* nextEmail = current->next; // Store the next email
+			delete current; // Delete the current email
+			current = nextEmail; // Move to the next email
+		}
+		front = nullptr; // Reset front pointer
+		rear = nullptr;  // Reset rear pointer
+	}
 
 	Email* getFront()
 	{
@@ -259,7 +274,7 @@ public:
 	}
 
 	void displayOutboxWithIndex(const string& userEmail) {
-		Email* current = front;  // Assuming you have a front pointer for your queue
+		Email* current = front; 
 		int index = 1;
 
 		cout << "Outbox Emails:\n";
@@ -280,118 +295,6 @@ public:
 	}
 };
 
-//class Admin {
-//public:
-//	// Function to add a new user
-//	void addUser(const string& filename) {
-//		string email, password, role;
-//		cout << "Enter new user's email: ";
-//		getline(cin, email);
-//		cout << "Enter new user's password: ";
-//		getline(cin, password);
-//		cout << "Enter new user's role (user/admin): ";
-//		getline(cin, role);
-//
-//		ofstream file(filename, ios::app); // Open in append mode
-//		if (!file.is_open()) {
-//			cout << "Error: Unable to open the file.\n";
-//			return;
-//		}
-//
-//		file << email << "," << password << "," << role << "\n";
-//		file.close();
-//
-//		cout << "User added successfully.\n";
-//	}
-//
-//	// Function to delete a user
-//	void deleteUser(const string& filename) {
-//		string emailToDelete;
-//		cout << "Enter the email of the user to delete: ";
-//		getline(cin, emailToDelete);
-//
-//		ifstream file(filename);
-//		ofstream tempFile("temp_login.txt");
-//		if (!file.is_open() || !tempFile.is_open()) {
-//			cout << "Error: Unable to open the file.\n";
-//			return;
-//		}
-//
-//		string line;
-//		bool userFound = false;
-//		while (getline(file, line)) {
-//			size_t pos = line.find(',');
-//			string email = line.substr(0, pos);
-//
-//			if (email != emailToDelete) {
-//				tempFile << line << "\n";
-//			}
-//			else {
-//				userFound = true;
-//			}
-//		}
-//
-//		file.close();
-//		tempFile.close();
-//
-//		remove(filename.c_str());
-//		rename("temp_login.txt", filename.c_str());
-//
-//		if (userFound) {
-//			cout << "User deleted successfully.\n";
-//		}
-//		else {
-//			cout << "User not found.\n";
-//		}
-//	}
-//
-//	// Function to update user password or role
-//	void modifyUser(const string& filename) {
-//		string emailToModify;
-//		cout << "Enter the email of the user to modify: ";
-//		getline(cin, emailToModify);
-//
-//		ifstream file(filename);
-//		ofstream tempFile("temp_login.txt");
-//		if (!file.is_open() || !tempFile.is_open()) {
-//			cout << "Error: Unable to open the file.\n";
-//			return;
-//		}
-//
-//		string line;
-//		bool userFound = false;
-//		while (getline(file, line)) {
-//			size_t pos = line.find(',');
-//			string email = line.substr(0, pos);
-//
-//			if (email == emailToModify) {
-//				userFound = true;
-//				string newPassword, newRole;
-//				cout << "Enter new password: ";
-//				getline(cin, newPassword);
-//				cout << "Enter new role (user/admin): ";
-//				getline(cin, newRole);
-//				tempFile << email << " " << newPassword << " " << newRole << "\n";
-//			}
-//			else {
-//				tempFile << line << "\n";
-//			}
-//		}
-//
-//		file.close();
-//		tempFile.close();
-//
-//		remove(filename.c_str());
-//		rename("temp_login.txt", filename.c_str());
-//
-//		if (userFound) {
-//			cout << "User modified successfully.\n";
-//		}
-//		else {
-//			cout << "User not found.\n";
-//		}
-//	}
-//};
 
 class Admin {
 	User* head;  // Linked list to store users temporarily
@@ -523,6 +426,7 @@ public:
 };
 
 void writeEmail(Queue& outbox, const string& email) {
+
 	string recipient, subject, body;
 
 	// Get recipient email
@@ -555,11 +459,9 @@ void writeEmail(Queue& outbox, const string& email) {
 		cout << "Body cannot be empty. Please try again.\n";
 	}
 
-	// Assuming Email has a constructor that takes these parameters
+	// Assuming Email has a constructor that takes these 
 	outbox.enqueue(email, recipient, subject, body);
-	cout << "Email composed successfully!\n";
 }
-
 
 
 void removeEmailFromFile(const string& filename, Email* emailToRemove) {
@@ -627,7 +529,7 @@ void appendToFile(const string& filename, Email* email)
 	file.close();
 }
 
-bool login(const string& filename, string& role, string& email) {
+bool login(const string& filename, string& role, string& userEmail) {
 	ifstream file(filename);
 	string password, storedEmail, storedPassword, storedRole;
 
@@ -637,7 +539,7 @@ bool login(const string& filename, string& role, string& email) {
 	}
 
 	cout << "Enter email: ";
-	cin >> email;;
+	cin >> userEmail;
 	cout << "Enter password: ";
 	cin >> password;
 
@@ -647,10 +549,10 @@ bool login(const string& filename, string& role, string& email) {
 		getline(file, storedPassword, ',');
 		getline(file, storedRole, '\n');
 
-		if (storedEmail == email && storedPassword == password)
+		if (storedEmail == userEmail && storedPassword == password)
 		{
 			role = storedRole;
-			email = storedEmail;
+			userEmail = storedEmail;
 			return true;
 		}
 	}

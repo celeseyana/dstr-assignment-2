@@ -7,7 +7,8 @@ int main() {
     Queue outbox;
     Stack poppedEmails;
     Queue dequeuedEmails;
-    string email;
+    Queue tempOutboxQueue;
+    string userEmail;
 
     // Load emails from CSV files
     inbox.loadFromFile("Inbox.csv");
@@ -19,7 +20,7 @@ int main() {
     while (isRunning) {
         cout << "Log In" << endl;
         cout << "--------------" << endl;
-        bool loginSuccess = login("login.txt", role, email);  // Authenticate user
+        bool loginSuccess = login("login.txt", role, userEmail);  // Authenticate user
 
         if (!loginSuccess) {
             cout << "Login failed!" << endl;
@@ -30,7 +31,7 @@ int main() {
 
         while (isLoggedIn) {
             // Display the menu based on the user role
-            cout << "Welcome " << email << "!" << endl;
+            cout << "Welcome " << userEmail << "!" << endl;
             cout << "Email System\n";
             cout << "1. View all your emails\n";
             cout << "2. View Most Recent Email in Inbox\n";
@@ -51,64 +52,65 @@ int main() {
             int choice;
             cin >> choice;
             cin.ignore();  // Handle newline character after input
-            if (choice < 0 || choice >(role == "admin" ? 8 : 8)) {
+            if (choice < 0 || choice >(role == "admin" ? 9 : 9)) {
                 cout << "Invalid choice. Please try again.\n";
                 continue;  // Return to the menu without proceeding
             }
             switch (choice) {
             case 1: {
-                inbox.viewReceivedEmails(email);  // Display emails for logged-in user
+                inbox.viewReceivedEmails(userEmail);  // Display emails for logged-in user
                 break;
             }
             case 2: {
-                inbox.displayRecentEmails(inbox, email);  // View most recent email
+                inbox.displayRecentEmails(inbox, userEmail);  // View most recent email
                 break;
             }
             case 3: {
-                writeEmail(outbox, email);  // Compose and send an email
+                writeEmail(outbox, userEmail);  // Compose and send an email
                 break;
             }
             case 4: {
                 // Display only the emails in the outbox that belong to the logged-in user
-                outbox.displayOutboxWithIndex(email);  // Pass the user's email to filter the display
+                outbox.displayOutboxWithIndex(userEmail);  // Pass the user's email to filter the display
 
                 int emailIndex;
                 cout << "Enter the number of the email you want to send, enter 0 to exit: ";
                 cin >> emailIndex;
 
                 if (emailIndex > 0) {
-                    Queue tempQueue;
-                    Email* current = outbox.getFront();
-                    int currentIndex = 1;
+                    Queue tempQueue; // Temporary queue for emails not being sent
+                    Email* current = outbox.getFront(); // Get the front of the queue
+                    int currentIndex = 0;
 
                     while (current != nullptr) {
-                        // Only process the email if it belongs to the logged-in user
                         if (currentIndex == emailIndex) {
-                            // Send the selected email
-                            displayEmail(current);
-                            cout << "Sending email...\n";
-                            // Here you would handle the actual sending logic
+                            // Display and send the selected email
+                            displayEmail(current); // This should correctly display the email
+                            cout << "Sending email to " << current->recipient << "..." << endl;
+                            inbox.push(current->sender, current->recipient, current->subject, current->body);
+                            // Do not enqueue this email again as it is being sent
                         }
                         else {
                             // Re-enqueue emails that aren't being sent
+                            cout << "Recipient: " << current->recipient << endl;
                             tempQueue.enqueue(current->sender, current->recipient, current->subject, current->body);
                         }
-                        current = current->next;
+                        current = current->next; // Move to the next email
                         currentIndex++;
                     }
 
+                    // Update the outbox to reflect the emails that remain after sending
                     outbox = tempQueue;  // Replace old queue with updated one
                 }
-                else if(emailIndex = 0) {
+                else if (emailIndex == 0) {
+                    // Exit case
                     break;
                 }
-                else
-                {
+                else {
                     cout << "Invalid email selection.\n";
                 }
                 break;
             }
-
             case 5: {
                 if (role == "admin") {
                     admin.addUser();  // Admin adds a new user
@@ -123,7 +125,7 @@ int main() {
                     admin.deleteUser();  // Admin deletes a user
                 }
                 else {
-                    cout << "You do not have permission to delete users." << endl;
+                    cout << "You do not have permission to this function." << endl;
                 }
                 break;
             }
@@ -132,7 +134,7 @@ int main() {
                     admin.modifyUser();  // Admin modifies a user
                 }
                 else {
-                    cout << "You do not have permission to modify users." << endl;
+                    cout << "You do not have permission to this function." << endl;
                 }
                 break;
             }
@@ -141,7 +143,7 @@ int main() {
                     admin.displayUsers();  // Admin views all users
                 }
                 else {
-                    cout << "You do not have permission to view users." << endl;
+                    cout << "You do not have permission to this function." << endl;
                 }
                 break;
             }
