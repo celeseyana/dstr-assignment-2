@@ -85,14 +85,12 @@ int main() {
                     while (current != nullptr) {
                         if (currentIndex == emailIndex) {
                             // Display and send the selected email
-                            displayEmail(current); // This should correctly display the email
+                            displayEmail(current); 
                             cout << "Sending email to " << current->recipient << "..." << endl;
                             inbox.push(current->sender, current->recipient, current->subject, current->body);
-                            // Do not enqueue this email again as it is being sent
                         }
                         else {
                             // Re-enqueue emails that aren't being sent
-                            cout << "Recipient: " << current->recipient << endl;
                             tempQueue.enqueue(current->sender, current->recipient, current->subject, current->body);
                         }
                         current = current->next; // Move to the next email
