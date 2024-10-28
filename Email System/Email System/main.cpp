@@ -53,7 +53,7 @@ int main() {
             int choice;
             cin >> choice;
             cin.ignore();  // Handle newline character after input
-            if (choice < 0 || choice >(role == "admin" ? 9 : 9)) {
+            if (choice < 0 || choice >(role == "admin" ? 10 : 10)) {
                 cout << "Invalid choice. Please try again.\n";
                 continue;  // Return to the menu without proceeding
             }
