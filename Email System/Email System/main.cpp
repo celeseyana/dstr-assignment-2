@@ -31,7 +31,7 @@ int main() {
 
         while (isLoggedIn) {
             // Display the menu based on the user role
-            cout << "Welcome " << userEmail << "!" << endl;
+            cout << "===== Welcome " << userEmail << "! =====" << endl;
             cout << "Email System\n";
             cout << "1. View all your emails\n";
             cout << "2. View Most Recent Email in Inbox\n";
@@ -53,6 +53,8 @@ int main() {
             int choice;
             cin >> choice;
             cin.ignore();  // Handle newline character after input
+            
+            cout << string(23, '=') << endl;
             if (choice < 0 || choice >(role == "admin" ? 10 : 10)) {
                 cout << "Invalid choice. Please try again.\n";
                 continue;  // Return to the menu without proceeding
@@ -80,37 +82,59 @@ int main() {
 
                 if (emailIndex > 0) {
                     Queue tempQueue; // Temporary queue for emails not being sent
+                    Queue senderQueue; // queue for emails of the sender's outbox
                     Email* current = outbox.getFront(); // Get the front of the queue
-                    int currentIndex = 0;
 
                     while (current != nullptr) {
-                        if (currentIndex == emailIndex) {
-                            // Display and send the selected email
-                            displayEmail(current); 
-                            cout << "Sending email to " << current->recipient << "..." << endl;
-                            inbox.push(current->sender, current->recipient, current->subject, current->body);
+                        if (current->sender == userEmail) {
+                            senderQueue.enqueue(current->sender, current->recipient, current->subject, current->body, current->priority);
                         }
                         else {
-                            // Re-enqueue emails that aren't being sent
-                            tempQueue.enqueue(current->sender, current->recipient, current->subject, current->body);
+                            // If the email is not from the sender, re-enqueue it in tempQueue
+                            tempQueue.enqueue(current->sender, current->recipient, current->subject, current->body, current->priority);
                         }
-                        current = current->next; // Move to the next email
+                        current = current->next; // Move to the next email in outbox
+                    }
+
+                    Email* senderEmail = senderQueue.getFront();
+                    int currentIndex = 1;
+                    bool emailFound = false;
+
+                    while (senderEmail != nullptr) {
+                        if (currentIndex == emailIndex) {
+                            // Display and send the selected email
+                            cout << emailIndex << ". ";
+                            displayEmail(senderEmail);
+                            cout << "Sending email to " << senderEmail->recipient << "..." << endl;
+                            inbox.push(senderEmail->sender, senderEmail->recipient, senderEmail->subject, senderEmail->body, senderEmail->priority);
+                            emailFound = true;
+                        }
+                        else {
+                            tempQueue.enqueue(senderEmail->sender, senderEmail->recipient, senderEmail->subject, senderEmail->body, senderEmail->priority);
+                        }
+                        senderEmail = senderEmail->next; // Move to the next email
                         currentIndex++;
                     }
 
-                    // Update the outbox to reflect the emails that remain after sending
-                    outbox = tempQueue;  // Replace old queue with updated one
+                    if (!emailFound) {
+                        cout << "Invalid Email Selection!" << endl;
+                    }
+                    else {
+                        outbox = tempQueue;
+                    }
                 }
                 else if (emailIndex == 0) {
-                    // Exit case
+                    // exiting
                     break;
                 }
                 else {
-                    cout << "Invalid email selection.\n";
+                    cout << "Invalid email selection!" << endl;
                 }
                 break;
             }
+
             case 5: {
+                cout << "why is it coming to hereeeeeeeee\n\n";
                 checkForDuplicates(inbox);
                 inbox.saveToFile("Inbox.csv");
                 break;

@@ -10,6 +10,7 @@ struct Email
 	string recipient;
 	string subject;
 	string body;
+	string priority;
 	Email* next; // for linking emails in the stack or queue
 };
 
@@ -24,12 +25,13 @@ void displayEmail(Email* email) {
 		cout << "No email to display.\n";
 		return;
 	}
-	cout << "\n---------- Email ----------\n";
+	cout << "\n========== Email ==========\n";
+	cout << "Priority: " << email->priority << "\n";
 	cout << "Sender: " << email->sender << "\n";
 	cout << "Recipient: " << email->recipient << "\n";
-	cout << "Subject: " << email->subject << "\n";
+	cout << "Subject: " << email->subject << "\n\n";
 	cout << "Body: " << email->body << "\n";
-	cout << "-----------------------------\n\n";
+	cout << string(27, '=') << endl << endl;;
 }
 class Stack
 {
@@ -38,10 +40,26 @@ public:
 	Stack() : top(nullptr) {}
 
 	//push email onto stack
-	void push(string sender, string recipient, string subject, string body)
+	void push(string sender, string recipient, string subject, string body, string priority)
 	{
-		Email* newEmail = new Email{ sender, recipient, subject, body, top };
-		top = newEmail;
+		Email* newEmail = new Email{ sender, recipient, subject, body, priority, nullptr };
+		
+		// if the stac is empty or new email is high priority
+		if (top == nullptr || priority == "High") {
+			// insert high priority email at the front
+			newEmail->next = top;
+			top = newEmail;
+		}
+		else {
+			// transverse to the end of the high priority email to insert the standard ones (recent -> old)
+			Email* current = top;
+			while (current->next != nullptr && current->next->priority == "High") {
+				current = current->next;
+			}
+			// reach the last high priority email
+			newEmail->next = current->next;
+			current->next = newEmail;
+		}
 	}
 
 	//Pop email from stack
@@ -74,7 +92,7 @@ public:
 	void loadFromFile(const string& filename)
 	{
 		ifstream file(filename);
-		string sender, recipient, subject, body;
+		string sender, recipient, subject, body, priority;
 
 		while (file.good())
 		{
@@ -84,10 +102,11 @@ public:
 			// Ensure that the other fields are read properly, or skip the line
 			if (!getline(file, recipient, ',')) continue;
 			if (!getline(file, subject, ',')) continue;
-			if (!getline(file, body, '\n')) continue;
+			if (!getline(file, body, ',')) continue;
+			if (!getline(file, priority, '\n')) continue;
 
 			// Push valid data into the stack
-			push(sender, recipient, subject, body);
+			push(sender, recipient, subject, body, priority);
 		}
 		file.close();
 	}
@@ -107,7 +126,8 @@ public:
 		while (current != nullptr)
 		{
 			file << current->sender << "," << current->recipient << ","
-				<< current->subject << "," << current->body << "\n";
+				<< current->subject << "," << current->body << "," 
+				<< current->priority << "\n";
 			current = current->next;
 		}
 
@@ -194,9 +214,9 @@ public:
 	}
 
 	//Enqueue email
-	void enqueue(string sender, string recipient, string subject, string body)
+	void enqueue(string sender, string recipient, string subject, string body, string priority)
 	{
-		Email* newEmail = new Email{ sender, recipient, subject, body, nullptr };
+		Email* newEmail = new Email{ sender, recipient, subject, body, priority, nullptr };
 		if (rear == nullptr)
 		{
 			front = rear = newEmail;
@@ -237,7 +257,7 @@ public:
 	void loadFromFile(const string& filename)
 	{
 		ifstream file(filename);
-		string sender, recipient, subject, body;
+		string sender, recipient, subject, body, priority;
 
 		while (file.good())
 		{
@@ -247,10 +267,11 @@ public:
 			// Ensure that the other fields are read properly, or skip the line
 			if (!getline(file, recipient, ',')) continue;
 			if (!getline(file, subject, ',')) continue;
-			if (!getline(file, body, '\n')) continue;
+			if (!getline(file, body, ',')) continue;
+			if (!getline(file, priority, '\n')) continue;
 
 			// Push valid data into the stack
-			enqueue(sender, recipient, subject, body);
+			enqueue(sender, recipient, subject, body, priority);
 		}
 		file.close();
 	}
@@ -274,22 +295,23 @@ public:
 	}
 
 	void displayOutboxWithIndex(const string& userEmail) {
-		Email* current = front; 
-		int index = 1;
+		Email* current = front;
+		int index = 0;
 
 		cout << "Outbox Emails:\n";
 		while (current != nullptr) {
 			// Only display emails that belong to the logged-in user
 			if (current->sender == userEmail) {
-				cout << index << ". Sender: " << current->sender
+				cout << index + 1 << ". Sender: " << current->sender
 					<< ", Recipient: " << current->recipient
-					<< ", Subject: " << current->subject << endl;
+					<< ", Subject: " << current->subject 
+					<< ", Priority: " << current->priority << endl;
 				index++;
 			}
 			current = current->next;  // Move to the next email
 		}
 
-		if (index == 1) {
+		if (index == 0) {
 			cout << "No emails in outbox for " << userEmail << ".\n";
 		}
 	}
@@ -427,7 +449,7 @@ public:
 
 void writeEmail(Queue& outbox, const string& email) {
 
-	string recipient, subject, body;
+	string recipient, subject, body, priority;
 
 	// Get recipient email
 	while (true) {
@@ -459,8 +481,28 @@ void writeEmail(Queue& outbox, const string& email) {
 		cout << "Body cannot be empty. Please try again.\n";
 	}
 
+	// Get body
+	while (true) {
+		cout << "Enter Priority of Email (0 = Standard, 1 = High): ";
+		getline(cin, priority);
+		if (!priority.empty()) {
+			if (priority == "0") {
+				priority = "Standard";
+				break;
+			}
+			else if (priority == "1") {
+				priority = "High";
+				break;
+			}
+			else {
+				cout << "Invalid Input! Please Try Again." << endl;
+			}
+		}
+		cout << "Priority cannot be empty. Please try again.\n";
+	}
+
 	// Assuming Email has a constructor that takes these 
-	outbox.enqueue(email, recipient, subject, body);
+	outbox.enqueue(email, recipient, subject, body, priority);
 }
 
 
@@ -604,7 +646,7 @@ void checkForDuplicates(Stack& inbox) {
 				}
 
 				if (email != nullptr) {
-					tempStack.push(email->sender, email->recipient, email->subject, email->body);
+					tempStack.push(email->sender, email->recipient, email->subject, email->body, email->priority);
 				}
 				break;
 			}
@@ -613,7 +655,7 @@ void checkForDuplicates(Stack& inbox) {
 		if (!isDuplicate) {
 			if (emailCount < MAX_EMAILS) {
 				emails[emailCount++] = emailString;
-				tempStack.push(email->sender, email->recipient, email->subject, email->body);
+				tempStack.push(email->sender, email->recipient, email->subject, email->body, email->priority);
 			}
 			else {
 				std::cerr << "Error: Maximum email limit reached.\n";
@@ -627,10 +669,11 @@ void checkForDuplicates(Stack& inbox) {
 
 	while (!tempStack.isEmpty()) {
 		Email* email = tempStack.pop();
-		inbox.push(email->sender, email->recipient, email->subject, email->body);
+		inbox.push(email->sender, email->recipient, email->subject, email->body, email->priority);
 	}
 
 	if (!foundDuplicate) {
 		std::cout << "No duplicate emails found.\n";
 	}
 }
+
