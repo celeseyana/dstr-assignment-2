@@ -11,16 +11,16 @@ int main() {
     string userEmail;
 
     // Load emails from CSV files
-    inbox.loadFromFile("C:/Users/liewj/source/repos/dstr-assignment-2/Email System/Email System/Inbox.csv");
-    outbox.loadFromFile("C:/Users/liewj/source/repos/dstr-assignment-2/Email System/Email System/Outbox.csv");
-    admin.loadUsers("C:/Users/liewj/source/repos/dstr-assignment-2/Email System/Email System/login.txt");
-
+    inbox.loadFromFile("Inbox.csv");
+    outbox.loadFromFile("Outbox.csv");
+    admin.loadUsers("login.txt");
 
     bool isRunning = true;
 
     while (isRunning) {
-        displayWelcomeScreen();
-        bool loginSuccess = login("C:/Users/liewj/source/repos/dstr-assignment-2/Email System/Email System/login.txt", role, userEmail);  // Authenticate user
+        cout << "Log In" << endl;
+        cout << "--------------" << endl;
+        bool loginSuccess = login("login.txt", role, userEmail);  // Authenticate user
 
         if (!loginSuccess) {
             cout << "Login failed!" << endl;
@@ -31,38 +31,33 @@ int main() {
 
         while (isLoggedIn) {
             // Display the menu based on the user role
-            cout << "\n\n========== Welcome, " << userEmail << "! ==========\n" << endl;
-            cout << "Please select an option:\n\n";
-            cout << " [ 1  ]  View all your emails\n";
-            cout << " [ 2  ]  View Most Recent Email in Inbox\n";
-            cout << " [ 3  ]  Compose and Send a New Email\n";
-            cout << " [ 4  ]  View and Send Email from Outbox\n";
-            cout << " [ 5  ]  Spam Inbox\n";
-            cout << " [ 6  ]  Search and Retrieve Subject\n";
+            cout << "===== Welcome " << userEmail << "! =====" << endl;
+            cout << "Email System\n";
+            cout << "1. View all your emails\n";
+            cout << "2. View Most Recent Email in Inbox\n";
+            cout << "3. Compose and Send a New Email\n";
+            cout << "4. View and Send Email from Outbox\n";
+            cout << "5. Spam Inbox\n";
 
             if (role == "admin") {
-                cout << " [ 7  ]  Add User\n";
-                cout << " [ 8  ]  Delete User\n";
-                cout << " [ 9  ]  Modify User\n";
-                cout << " [ 10 ]  View Users\n";
-                cout << " [ 11 ]  Search and Retrieve Email\n";
+                cout << "6. Add User\n";
+                cout << "7. Delete User\n";
+                cout << "8. Modify User\n";
+                cout << "9. View users\n";
             }
 
-            cout << " [ 0  ]  Log out\n";
-            cout << " [ 99 ]  Exit\n" << endl;
+            cout << "10. Log out\n";
+            cout << "0. Exit\n";
             cout << "Enter your choice: ";
 
             int choice;
             cin >> choice;
             cin.ignore();  // Handle newline character after input
-
+            
             cout << string(23, '=') << endl;
-
-            // Adjust choice validation based on user role
-            if ((role == "admin" && (choice < 0 || (choice > 11 && choice != 99))) ||
-                (role != "admin" && (choice < 0 || (choice > 6 && choice != 99)))) {
+            if (choice < 0 || choice >(role == "admin" ? 10 : 10)) {
                 cout << "Invalid choice. Please try again.\n";
-                continue;
+                continue;  // Return to the menu without proceeding
             }
             switch (choice) {
             case 1: {
@@ -145,10 +140,6 @@ int main() {
                 break;
             }
             case 6: {
-            searchAndRetrieveSubject(userEmail);
-            break;
-            }
-            case 7: {
                 if (role == "admin") {
                     admin.addUser();  // Admin adds a new user
                 }
@@ -157,7 +148,7 @@ int main() {
                 }
                 break;
             }
-            case 8: {
+            case 7: {
                 if (role == "admin") {
                     admin.deleteUser();  // Admin deletes a user
                 }
@@ -166,7 +157,7 @@ int main() {
                 }
                 break;
             }
-            case 9: {
+            case 8: {
                 if (role == "admin") {
                     admin.modifyUser();  // Admin modifies a user
                 }
@@ -175,7 +166,7 @@ int main() {
                 }
                 break;
             }
-            case 10: {
+            case 9: {
                 if (role == "admin") {
                     admin.displayUsers();  // Admin views all users
                 }
@@ -184,16 +175,12 @@ int main() {
                 }
                 break;
             }
-            case 11: {
-                SearchAndRetrieveEmail();
-                break;
-            }
-            case 0: {
+            case 10: {
                 // Log out and return to login screen
                 isLoggedIn = false;
                 break;
             }
-            case 99: {
+            case 0: {
                 // Exit the program
                 isRunning = false;
                 isLoggedIn = false;

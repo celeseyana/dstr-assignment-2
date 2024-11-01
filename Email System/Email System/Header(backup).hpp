@@ -20,17 +20,6 @@ struct User {
 	std::string role;
 	User* next;
 };
-
-// Define a Node structure for the linked list to store matched results
-struct Node {
-	string sender;
-	string recipient;
-	string subject;
-	string body;
-	Node* next;
-};
-
-
 void displayEmail(Email* email) {
 	if (email == nullptr) {
 		cout << "No email to display.\n";
@@ -44,8 +33,6 @@ void displayEmail(Email* email) {
 	cout << "Body: " << email->body << "\n";
 	cout << string(27, '=') << endl << endl;;
 }
-
-
 class Stack
 {
 	Email* top;
@@ -146,8 +133,6 @@ public:
 
 		file.close();
 	}
-
-
 	void viewReceivedEmails(const string& userEmail)
 	{
 		Email* current = top;  // Assuming 'top' points to the first email
@@ -332,84 +317,6 @@ public:
 	}
 };
 
-class LinkedList {
-	struct Node {
-		std::string email;
-		Node* next;
-	};
-	Node* head;
-
-public:
-	LinkedList() : head(nullptr) {}
-
-	void add(const std::string& email) {
-		if (contains(email)) return;  // Avoid duplicates
-		Node* newNode = new Node{ email, nullptr };
-		if (!head) {
-			head = newNode;
-		}
-		else {
-			Node* current = head;
-			while (current->next) {
-				current = current->next;
-			}
-			current->next = newNode;
-		}
-	}
-
-	bool contains(const std::string& email) const {
-		Node* current = head;
-		while (current) {
-			if (current->email == email) return true;
-			current = current->next;
-		}
-		return false;
-	}
-
-	bool isEmpty() const {
-		return head == nullptr;
-	}
-
-	void displayAndChoose(std::string& chosenEmail) {
-		if (isEmpty()) {
-			cout << "No matches found.\n";
-			return;
-		}
-
-		int option;
-		Node* current;
-
-		// Display options and prompt user until a valid selection is made
-		while (true) {
-			int displayOption = 1;
-			current = head;
-
-			// Display each email with an option number
-			while (current) {
-				cout << displayOption++ << ". " << current->email << "\n";
-				current = current->next;
-			}
-
-			cout << "\nSelect an email from the options: ";
-			cin >> option;
-
-			// Check if the option is within the valid range
-			if (option >= 1 && option < displayOption) {
-				// Retrieve the chosen email
-				current = head;
-				for (int i = 1; i < option; ++i) {
-					current = current->next;
-				}
-				chosenEmail = current->email;
-				break; // Valid choice, exit the loop
-			}
-			else {
-				cout << "\nInvalid, please try again.\n\n";
-			}
-		}
-	}
-};
-
 
 class Admin {
 	User* head;  // Linked list to store users temporarily
@@ -540,17 +447,6 @@ public:
 	}
 };
 
-void displayWelcomeScreen() {
-	cout << "======================================================" << endl;
-	cout << "||             Welcome to Email Management           ||" << endl;
-	cout << "||                  System by Group11                ||" << endl;
-	cout << "======================================================" << endl;
-	cout << "\n\n";
-	cout << "------------------- Login Page -----------------------" << endl;
-	cout << "\n\n\nPlease enter your login details to proceed" << endl;
-}
-
-
 void writeEmail(Queue& outbox, const string& email) {
 
 	string recipient, subject, body, priority;
@@ -660,7 +556,6 @@ void removeEmailFromFile(const string& filename, Email* emailToRemove) {
 	}
 }
 
-
 void appendToFile(const string& filename, Email* email)
 {
 	ofstream file(filename, ios::app); // Open in append mode to add only the new email
@@ -675,7 +570,6 @@ void appendToFile(const string& filename, Email* email)
 
 	file.close();
 }
-
 
 bool login(const string& filename, string& role, string& userEmail) {
 	ifstream file(filename);
@@ -783,328 +677,3 @@ void checkForDuplicates(Stack& inbox) {
 	}
 }
 
-void loadAndSuggestEmails(const string& filename, const string& partialEmail, LinkedList& suggestions, bool isInbox) {
-	ifstream file(filename);
-	string sender, recipient, subject, body, priority;
-
-	while (file.good()) {
-		getline(file, sender, ',');
-		getline(file, recipient, ',');
-		getline(file, subject, ',');
-		getline(file, body, ',');
-		getline(file, priority, '\n');
-
-		string emailField = isInbox ? recipient : sender;
-		if (emailField.find(partialEmail) != string::npos) {
-			suggestions.add(emailField);  // Add only if not already in list
-		}
-	}
-	file.close();
-}
-
-int countOccurrences(const string& filename, const string& email, bool isInbox) {
-	ifstream file(filename);
-	string sender, recipient, subject, body, priority;
-	int count = 0;
-
-	while (file.good()) {
-		getline(file, sender, ',');
-		getline(file, recipient, ',');
-		getline(file, subject, ',');
-		getline(file, body, ',');
-		getline(file, priority, '\n');
-
-		if ((isInbox && recipient == email) || (!isInbox && sender == email)) {
-			count++;
-		}
-	}
-	file.close();
-	return count;
-}
-
-
-// Function to add a node to the linked list
-void addNode(Node*& head, const string& sender, const string& recipient, const string& subject, const string& body) {
-	Node* newNode = new Node{ sender, recipient, subject, body, nullptr };
-	if (!head) {
-		head = newNode;
-	}
-	else {
-		Node* current = head;
-		while (current->next) {
-			current = current->next;
-		}
-		current->next = newNode;
-	}
-}
-
-// Function to display the linked list and let user choose
-void displayAndChoose(Node* head) {
-	if (!head) {
-		cout << "No matching subjects found.\n";
-		return;
-	}
-
-	while (true) {
-		int index = 1;
-		Node* current = head;
-
-		// Display all matched subjects
-		cout << "\nMatching Emails:\n";
-		while (current) {
-			cout << index << ". Subject: " << current->subject << endl;
-			index++;
-			current = current->next;
-		}
-
-		// Get user's choice
-		int choice;
-		cout << "Enter the number of the email you want to view (or 0 to exit): ";
-		cin >> choice;
-
-		if (choice == 0) {
-			cout << "Exiting selection.\n";
-			return;
-		}
-
-		if (choice > 0 && choice < index) {
-			// Reset the current pointer to head and navigate to the chosen email
-			current = head;
-			for (int i = 1; i < choice; ++i) {
-				current = current->next;
-			}
-			// Display the chosen email details
-			cout <<endl<< string(55, '=') << endl;
-			cout << "\nFrom: " << current->sender << "," << endl;
-			cout << "\nSubject: " << current->subject << endl;
-			cout << "\n\nBody: " << current->body << endl << endl;
-			cout << string(55, '=') << endl << endl << endl;
-
-			// Ask if the user wants to continue
-			char continueChoice;
-			cout << "Do you want to view another email? (y/n): ";
-			cin >> continueChoice;
-
-			if (continueChoice == 'n' || continueChoice == 'N') {
-				cout << "Returning to main menu.\n";
-				return;
-			}
-		}
-		else {
-			cout << "Invalid choice. Please try again.\n";
-		}
-	}
-}
-
-void displayEmailDetails(const string& filename, const string& email, bool isInbox) {
-	ifstream file(filename);
-	string sender, recipient, subject, body, priority;
-	bool emailFound = false;
-
-	while (file.good()) {
-		getline(file, sender, ',');
-		getline(file, recipient, ',');
-		getline(file, subject, ',');
-		getline(file, body, ',');
-		getline(file, priority, '\n');
-
-		// Check if the email matches the chosen one based on inbox or outbox
-		if ((isInbox && recipient == email) || (!isInbox && sender == email)) {
-
-			// Display appropriate information based on inbox or outbox
-			cout << string(55, '=') << endl;
-			cout << (isInbox ? "From: " : "To: ") << (isInbox ? sender : recipient) << "," << endl;
-
-			cout << "\nSubject: " << subject << endl;
-
-			cout << "\n\nBody: " << body << endl << endl;
-			cout << string(55, '=') << endl << endl<<endl;
-			emailFound = true;
-		}
-	}
-	file.close();
-	// Display message if no emails are found for the selected option
-	if (!emailFound) {
-		cout << endl << string(55, '=') << endl;
-		cout << "Currently nothing inside " << (isInbox ? "inbox" : "outbox") << ".\n";
-		cout << endl << string(55, '=') << endl<<endl;
-	}
-
-	
-}
-
-void SearchAndRetrieveEmail() {
-	cout << "Search and Retrieve:\n";
-	cout << string(23, '=') << endl;
-	cout << "Please enter the email for retrieve: ";
-	string partialEmail;
-	cin >> partialEmail;
-
-	LinkedList suggestions;
-	loadAndSuggestEmails("inbox.csv", partialEmail, suggestions, true);
-	loadAndSuggestEmails("Outbox.csv", partialEmail, suggestions, false);
-
-	if (suggestions.isEmpty()) {
-		cout << "No email found.\n";
-		return;
-	}
-	cout << "\nWe've found some similiar emails, please choose the options:" << endl << endl;
-	string chosenEmail;
-	suggestions.displayAndChoose(chosenEmail);
-
-	// Count the number of emails received in the Inbox and Outbox
-	int countForInbox = countOccurrences("inbox.csv", chosenEmail, true);
-	int countForOutbox = countOccurrences("outbox.csv", chosenEmail, false);
-
-	cout << chosenEmail << " has " << countForInbox << " inbox, and " << countForOutbox << " outbox.\n";
-
-	//Display retrieve options , using loop 
-	while (true) {
-		// Display retrieve options
-		cout << "\nRetrieve from:\n";
-		cout << "1. Inbox\n";
-		cout << "2. Outbox\n";
-		cout << "0. Return back\n";
-		cout << "\nPlease enter the options: ";
-
-		int option;
-		cin >> option;
-
-		switch (option) {
-		case 1:
-			if (countForInbox == 0) {
-				cout << endl << string(23, '=') << endl;
-				cout << "\nNothing else in inbox.\n";
-				cout << endl << string(23, '=') << endl << endl;
-			}
-			else {
-				displayEmailDetails("inbox.csv", chosenEmail, true);
-			}
-			break;
-
-		case 2:
-			if (countForOutbox == 0) {
-				cout << endl << string(23, '=') << endl;
-				cout << "\nNothing else in outbox.\n";
-				cout << endl << string(23, '=') << endl << endl;
-			}
-			else {
-				displayEmailDetails("outbox.csv", chosenEmail, false);
-			}
-			break;
-
-		case 0:
-			return; // Exit the retrieve menu
-
-		default:
-			cout << "Invalid option, please try again.\n";
-			continue; // Go back to the start of the loop
-		}
-
-		// If a valid option is chosen, prompt for continuation and break out of the loop
-		cout << "Do you want to continue? (y/n): ";
-		char choice;
-		cin >> choice;
-		if (choice == 'y' || choice == 'Y') {
-			// Return to main menu or restart function
-			break; // Exit the retrieve options loop to return to the main program
-		}
-		else {
-			cout << "\nThank you for using our Email System!" << endl;
-			exit(0);  // Exit the program
-		}
-	}
-}
-
-void displayUserEmailDetails(const string& filename, const string& userEmail, bool isInbox) {
-	ifstream file(filename);
-	if (!file.is_open()) {
-		cout << "Error opening file: " << filename << endl;
-		return;
-	}
-
-	string sender, recipient, subject, body, priority;
-	bool emailFound = false;
-
-	while (getline(file, sender, ',')) {
-		getline(file, recipient, ',');
-		getline(file, subject, ',');
-		getline(file, body, ',');
-		getline(file, priority, '\n');
-
-		// Check if the email matches the user's email in the inbox or outbox
-		if ((isInbox && recipient == userEmail) || (!isInbox && sender == userEmail)) {
-			// Display format based on inbox or outbox
-			cout << string(55, '=') << endl;
-			cout << (isInbox ? "From: " : "To: ") << (isInbox ? sender : recipient) << endl;
-			cout << "\nSubject: " << subject << endl;
-			cout << "\n\nBody: " << body << endl << endl;
-			cout << string(55, '=') << endl << endl;
-			emailFound = true;
-		}
-	}
-	file.close();
-
-	if (!emailFound) {
-		cout << "No emails found in " << (isInbox ? "inbox" : "outbox") << " for " << userEmail << ".\n";
-	}
-}
-
-
-// Function to search for the subject in inbox and outbox files
-void searchAndRetrieveSubject(const string& userEmail) {
-	string searchTerm;
-	cout << "Enter a search term for the subject: ";
-	cin >> searchTerm;
-
-	// Linked list to store matching emails
-	Node* matches = nullptr;
-
-	// Search in inbox.csv
-	ifstream inboxFile("inbox.csv");
-	if (inboxFile.is_open()) {
-		string sender, recipient, subject, body, priority;
-		while (getline(inboxFile, sender, ',') &&
-			getline(inboxFile, recipient, ',') &&
-			getline(inboxFile, subject, ',') &&
-			getline(inboxFile, body, ',') &&
-			getline(inboxFile, priority, '\n')) {
-			if (subject.find(searchTerm) != string::npos) {
-				addNode(matches, sender, recipient, subject, body);
-			}
-		}
-		inboxFile.close();
-	}
-	else {
-		cout << "Error opening inbox.csv file.\n";
-	}
-
-	// Search in outbox.csv
-	ifstream outboxFile("C:outbox.csv");
-	if (outboxFile.is_open()) {
-		string sender, recipient, subject, body, priority;
-		while (getline(outboxFile, sender, ',') &&
-			getline(outboxFile, recipient, ',') &&
-			getline(outboxFile, subject, ',') &&
-			getline(outboxFile, body, ',') &&
-			getline(outboxFile, priority, '\n')) {
-			if (subject.find(searchTerm) != string::npos) {
-				addNode(matches, sender, recipient, subject, body);
-			}
-		}
-		outboxFile.close();
-	}
-	else {
-		cout << "Error opening outbox.csv file.\n";
-	}
-
-	// Display matched subjects and let the user choose one to view
-	displayAndChoose(matches);
-
-	// Clean up linked list memory
-	while (matches) {
-		Node* temp = matches;
-		matches = matches->next;
-		delete temp;
-	}
-}
