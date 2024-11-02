@@ -11,19 +11,20 @@ int main() {
     string userEmail;
 
     // Load emails from CSV files
-    inbox.loadFromFile("C:/Users/liewj/source/repos/dstr-assignment-2/Email System/Email System/Inbox.csv");
-    outbox.loadFromFile("C:/Users/liewj/source/repos/dstr-assignment-2/Email System/Email System/Outbox.csv");
-    admin.loadUsers("C:/Users/liewj/source/repos/dstr-assignment-2/Email System/Email System/login.txt");
+    inbox.loadFromFile("Inbox.csv");
+    outbox.loadFromFile("Outbox.csv");
+    admin.loadUsers("login.txt");
 
 
     bool isRunning = true;
 
     while (isRunning) {
         displayWelcomeScreen();
-        bool loginSuccess = login("C:/Users/liewj/source/repos/dstr-assignment-2/Email System/Email System/login.txt", role, userEmail);  // Authenticate user
+        bool loginSuccess = login("login.txt", role, userEmail);  // Authenticate user
 
         if (!loginSuccess) {
             cout << "Login failed!" << endl;
+            break;
             continue;  // Return to login prompt without exiting
         }
 
