@@ -1,2 +1,3 @@
 tristenchris@gmail.com,tristen,user
 joachimwongcl@gmail.com,jochimp,admin
+vimalraaj@gmail.com,vimal,user

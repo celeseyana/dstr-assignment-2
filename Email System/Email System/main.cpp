@@ -18,13 +18,13 @@ int main() {
 
     bool isRunning = true;
 
+    displayWelcomeScreen();
+
     while (isRunning) {
-        displayWelcomeScreen();
         bool loginSuccess = login("login.txt", role, userEmail);  // Authenticate user
 
         if (!loginSuccess) {
-            cout << "Login failed!" << endl;
-            break;
+            cout << "Login failed!" << endl << endl;
             continue;  // Return to login prompt without exiting
         }
 
@@ -34,6 +34,8 @@ int main() {
             // Display the menu based on the user role
             cout << "\n\n========== Welcome, " << userEmail << "! ==========\n" << endl;
             cout << "Please select an option:\n\n";
+
+            cout << " [ 0  ]  Log out\n";
             cout << " [ 1  ]  View all your emails\n";
             cout << " [ 2  ]  View Most Recent Email in Inbox\n";
             cout << " [ 3  ]  Compose and Send a New Email\n";
@@ -49,7 +51,6 @@ int main() {
                 cout << " [ 11 ]  Search and Retrieve Email\n";
             }
 
-            cout << " [ 0  ]  Log out\n";
             cout << " [ 99 ]  Exit\n" << endl;
             cout << "Enter your choice: ";
 
