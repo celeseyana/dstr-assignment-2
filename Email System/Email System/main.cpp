@@ -40,15 +40,16 @@ int main() {
             cout << " [ 2  ]  View Most Recent Email in Inbox\n";
             cout << " [ 3  ]  Compose and Send a New Email\n";
             cout << " [ 4  ]  View and Send Email from Outbox\n";
-            cout << " [ 5  ]  Spam Inbox\n";
+            cout << " [ 5  ]  Duplicate Emails\n";
             cout << " [ 6  ]  Search and Retrieve Subject\n";
+            cout << " [ 7  ]  Spam Emails\n";
 
             if (role == "admin") {
-                cout << " [ 7  ]  Add User\n";
-                cout << " [ 8  ]  Delete User\n";
-                cout << " [ 9  ]  Modify User\n";
-                cout << " [ 10 ]  View Users\n";
-                cout << " [ 11 ]  Search and Retrieve Email\n";
+                cout << " [ 8  ]  Add User\n";
+                cout << " [ 9  ]  Delete User\n";
+                cout << " [ 10  ]  Modify User\n";
+                cout << " [ 11 ]  View Users\n";
+                cout << " [ 12 ]  Search and Retrieve Email\n";
             }
 
             cout << " [ 99 ]  Exit\n" << endl;
@@ -61,8 +62,8 @@ int main() {
             cout << string(23, '=') << endl;
 
             // Adjust choice validation based on user role
-            if ((role == "admin" && (choice < 0 || (choice > 11 && choice != 99))) ||
-                (role != "admin" && (choice < 0 || (choice > 6 && choice != 99)))) {
+            if ((role == "admin" && (choice < 0 || (choice > 12 && choice != 99))) ||
+                (role != "admin" && (choice < 0 || (choice > 7 && choice != 99)))) {
                 cout << "Invalid choice. Please try again.\n";
                 continue;
             }
@@ -147,10 +148,30 @@ int main() {
                 break;
             }
             case 6: {
-            searchAndRetrieveSubject(userEmail);
-            break;
+                searchAndRetrieveSubject(userEmail);
+                break;
             }
             case 7: {
+                Stack spamStack;  // Stack to hold spam emails
+                Email* current = inbox.peek();  // Start from the top of the stack
+
+                while (current != nullptr) {
+                    // Check if the current email contains spam words
+                    if (containsSpam(*current, spamWords, sizeof(spamWords) / sizeof(spamWords[0]))) {
+                        spamStack.push(current->sender, current->recipient, current->subject, current->body, current->priority);
+                    }
+                    current = current->next;  // Move to the next email in the stack
+                }
+
+                if (spamStack.isEmpty()) {
+                    cout << "No spam emails found.\n";
+                }
+                else {
+                    handleSpamEmails(spamStack);  // Allow user to review spam emails
+                }
+                break;
+            }
+            case 8: {
                 if (role == "admin") {
                     admin.addUser();  // Admin adds a new user
                 }
@@ -159,7 +180,7 @@ int main() {
                 }
                 break;
             }
-            case 8: {
+            case 9: {
                 if (role == "admin") {
                     admin.deleteUser();  // Admin deletes a user
                 }
@@ -168,7 +189,7 @@ int main() {
                 }
                 break;
             }
-            case 9: {
+            case 10: {
                 if (role == "admin") {
                     admin.modifyUser();  // Admin modifies a user
                 }
@@ -177,7 +198,7 @@ int main() {
                 }
                 break;
             }
-            case 10: {
+            case 11: {
                 if (role == "admin") {
                     admin.displayUsers();  // Admin views all users
                 }
@@ -186,7 +207,7 @@ int main() {
                 }
                 break;
             }
-            case 11: {
+            case 12: {
                 SearchAndRetrieveEmail();
                 break;
             }

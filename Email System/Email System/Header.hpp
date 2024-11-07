@@ -1108,3 +1108,67 @@ void searchAndRetrieveSubject(const string& userEmail) {
 		delete temp;
 	}
 }
+
+const string spamWords[] = {
+	"Free", "Guarantee", "Urgent", "Winner", "Congratulations", "Act now",
+	"Click here", "Exclusive deal", "Limited time", "No cost", "Risk-free",
+	"Offer expires", "100% free", "Apply now", "Earn cash", "Save big",
+	"Win big", "Double your income", "Cash bonus", "Cheap", "Promise you",
+	"Fast cash", "Increase sales", "Lowest price", "No obligation",
+	"Money back", "Million dollars", "Best price", "Satisfaction guaranteed",
+	"Credit card required", "Miracle cure", "Get paid", "Earn extra income",
+	"Work from home", "Urgent response", "Act immediately", "Be your own boss",
+	"Join free", "Call now", "Eliminate debt", "Extra income", "Limited availability",
+	"Special promotion", "YouÅfre a winner", "Lowest rates", "Fast approval",
+	"Apply now", "As seen on", "Get it now", "No hidden fees"
+};
+
+string toLowerCase(const string& str) {
+	string lowerStr = str;  // Copy original string
+	for (size_t i = 0; i < lowerStr.length(); ++i) {
+		if (lowerStr[i] >= 'A' && lowerStr[i] <= 'Z') {
+			lowerStr[i] = lowerStr[i] + ('a' - 'A');  // Convert to lowercase
+		}
+	}
+	return lowerStr;
+}
+
+// Function to check if an email contains spam words
+bool containsSpam(const Email& email, const string spamWords[], int numWords) {
+	// Convert subject and body to lowercase
+	string lowerSubject = toLowerCase(email.subject);
+	string lowerBody = toLowerCase(email.body);
+
+	// Check if any spam word is found in the subject or body (case-insensitive)
+	for (int i = 0; i < numWords; ++i) {
+		string lowerSpamWord = toLowerCase(spamWords[i]);
+		if (lowerSubject.find(lowerSpamWord) != string::npos ||
+			lowerBody.find(lowerSpamWord) != string::npos) {
+			return true;
+		}
+	}
+	return false;
+}
+
+// Function to display and prompt for spam email handling
+void handleSpamEmails(Stack& spamStack) {
+	Email* current = spamStack.peek();  // Start with the top email
+	while (current != nullptr) {
+		cout << "Spam Email Found:\n";
+		cout << "Sender: " << current->sender << "\n";
+		cout << "Recipient: " << current->recipient << "\n";
+		cout << "Subject: " << current->subject << "\n";
+		cout << "Body: " << current->body << "\n";
+		cout << "Priority: " << current->priority << "\n";
+
+		// Prompt the user to keep or delete the spam email
+		char choice;
+		cout << "Do you want to delete this email? (y/n): ";
+		cin >> choice;
+		if (choice == 'y' || choice == 'Y') {
+			spamStack.pop();  // Remove the email from the stack
+		}
+
+		current = spamStack.peek();  // Move to the next email (after pop)
+	}
+}

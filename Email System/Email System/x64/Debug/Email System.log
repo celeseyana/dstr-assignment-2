@@ -1,3 +1,5 @@
 ﻿  main.cpp
-D:\Github\dstr-assignment-2\dstr-assignment-2\Email System\Email System\Header.hpp(83,12): warning C4129: '.': unrecognized character escape sequence
-  Email System.vcxproj -> D:\Github\dstr-assignment-2\dstr-assignment-2\Email System\x64\Debug\Email System.exe
+C:\Github\dstr-assignment-2\Email System\Email System\Header.hpp(83,12): warning C4129: '.': unrecognized character escape sequence
+  (compiling source file 'main.cpp')
+  
+  Email System.vcxproj -> C:\Github\dstr-assignment-2\Email System\x64\Debug\Email System.exe
