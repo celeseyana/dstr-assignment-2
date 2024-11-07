@@ -153,15 +153,24 @@ int main() {
             }
             case 7: {
                 Stack spamStack;  // Stack to hold spam emails
-                Email* current = inbox.peek();  // Start from the top of the stack
+                Stack newInbox;   // New inbox to hold emails after spam removal
+                Email* current = inbox.peek();  // Start from the top of the inbox
 
                 while (current != nullptr) {
                     // Check if the current email contains spam words
                     if (containsSpam(*current, spamWords, sizeof(spamWords) / sizeof(spamWords[0]))) {
+                        // If email is spam, push it onto the spam stack
                         spamStack.push(current->sender, current->recipient, current->subject, current->body, current->priority);
                     }
-                    current = current->next;  // Move to the next email in the stack
+                    else {
+                        // Otherwise, keep it in the new inbox
+                        newInbox.push(current->sender, current->recipient, current->subject, current->body, current->priority);
+                    }
+                    current = current->next;  // Move to the next email in the inbox
                 }
+
+                // Replace the original inbox with the new inbox (without spam)
+                inbox = newInbox;
 
                 if (spamStack.isEmpty()) {
                     cout << "No spam emails found.\n";
