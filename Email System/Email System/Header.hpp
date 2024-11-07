@@ -1166,9 +1166,13 @@ void handleSpamEmails(Stack& spamStack) {
 		cout << "Do you want to delete this email? (y/n): ";
 		cin >> choice;
 		if (choice == 'y' || choice == 'Y') {
-			spamStack.pop();  // Remove the email from the stack
+			spamStack.pop();  // Remove the email from the stack if the user chooses to delete
+		}
+		else {
+			spamStack.pop();  // Keep the email in the stack, but pop it so we can move to the next email
 		}
 
+		// Check if there are more emails left in the stack
 		current = spamStack.peek();  // Move to the next email (after pop)
 	}
 }
