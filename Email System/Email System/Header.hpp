@@ -1153,8 +1153,10 @@ bool containsSpam(const Email& email, const string spamWords[], int numWords) {
 	return false;
 }
 
-void handleSpamEmails(Stack& spamStack) {
+bool handleSpamEmails(Stack& spamStack, Stack& inbox) {
+	bool deletedAny = false;  // Track if any emails were deleted
 	Email* current = spamStack.peek();  // Start with the top email
+
 	while (current != nullptr) {
 		cout << "Spam Email Found:\n";
 		cout << "Sender: " << current->sender << "\n";
@@ -1172,13 +1174,18 @@ void handleSpamEmails(Stack& spamStack) {
 			// Only pop and delete the email if the user selects 'y'
 			Email* emailToDelete = spamStack.pop();
 			delete emailToDelete;  // Free the memory associated with the email
+			deletedAny = true;  // Mark that an email was deleted
 		}
 		else {
-			// If not deleting, only pop to move to the next email without deleting
-			spamStack.pop();
+			// If not deleting, push it back to the inbox stack
+			Email* emailToKeep = spamStack.pop();  // Remove from spam stack
+			inbox.push(emailToKeep->sender, emailToKeep->recipient, emailToKeep->subject, emailToKeep->body, emailToKeep->priority);  // Push back to inbox
+			delete emailToKeep;  // Free the memory associated with the email (if needed)
 		}
 
 		// Move to the next email in the spam stack
 		current = spamStack.peek();
 	}
+
+	return deletedAny;  // Return whether any emails were deleted
 }

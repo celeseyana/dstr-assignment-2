@@ -176,7 +176,10 @@ int main() {
                     cout << "No spam emails found.\n";
                 }
                 else {
-                    handleSpamEmails(spamStack);  // Allow user to review spam emails
+                    bool deletedAny = handleSpamEmails(spamStack, inbox);  // Allow user to review spam emails
+                    if (!deletedAny) {
+                        cout << "No spam emails were deleted.\n";
+                    }
                 }
                 break;
             }
