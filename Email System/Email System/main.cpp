@@ -1,7 +1,7 @@
 #include "Header.hpp"
 
 int main() {
-    Admin admin;
+    Admin* admin = new Admin();
     string role;
     Stack inbox;
     Queue outbox;
@@ -13,15 +13,14 @@ int main() {
     // Load emails from CSV files
     inbox.loadFromFile("Inbox.csv");
     outbox.loadFromFile("Outbox.csv");
-    admin.loadUsers("login.txt");
-
+    admin->loadUsers("login.txt");
 
     bool isRunning = true;
 
     displayWelcomeScreen();
 
     while (isRunning) {
-        bool loginSuccess = login("login.txt", role, userEmail);  // Authenticate user
+        bool loginSuccess = login("login.txt", role, userEmail, admin);  // Authenticate user
 
         if (!loginSuccess) {
             cout << "Login failed!" << endl << endl;
@@ -115,6 +114,7 @@ int main() {
                             displayEmail(senderEmail);
                             cout << "Sending email to " << senderEmail->recipient << "..." << endl;
                             inbox.push(senderEmail->sender, senderEmail->recipient, senderEmail->subject, senderEmail->body, senderEmail->priority);
+                            cout << "Email successfully sent!" << endl;
                             emailFound = true;
                         }
                         else {
@@ -185,7 +185,7 @@ int main() {
             }
             case 8: {
                 if (role == "admin") {
-                    admin.addUser();  // Admin adds a new user
+                    admin->addUser();  // Admin adds a new user
                 }
                 else {
                     cout << "You do not have permission to add users." << endl;
@@ -194,7 +194,7 @@ int main() {
             }
             case 9: {
                 if (role == "admin") {
-                    admin.deleteUser();  // Admin deletes a user
+                    admin->deleteUser();  // Admin deletes a user
                 }
                 else {
                     cout << "You do not have permission to this function." << endl;
@@ -203,7 +203,7 @@ int main() {
             }
             case 10: {
                 if (role == "admin") {
-                    admin.modifyUser();  // Admin modifies a user
+                    admin->modifyUser();  // Admin modifies a user
                 }
                 else {
                     cout << "You do not have permission to this function." << endl;
@@ -212,7 +212,7 @@ int main() {
             }
             case 11: {
                 if (role == "admin") {
-                    admin.displayUsers();  // Admin views all users
+                    admin->displayUsers();  // Admin views all users
                 }
                 else {
                     cout << "You do not have permission to this function." << endl;

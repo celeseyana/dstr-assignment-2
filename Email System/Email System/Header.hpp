@@ -15,9 +15,9 @@ struct Email
 };
 
 struct User {
-	std::string email;
-	std::string password;
-	std::string role;
+	string email;
+	string password;
+	string role;
 	User* next;
 };
 
@@ -56,7 +56,7 @@ public:
 	void push(string sender, string recipient, string subject, string body, string priority)
 	{
 		Email* newEmail = new Email{ sender, recipient, subject, body, priority, nullptr };
-		
+
 		// if the stac is empty or new email is high priority
 		if (top == nullptr || priority == "High") {
 			// insert high priority email at the front
@@ -142,7 +142,7 @@ public:
 		while (current != nullptr)
 		{
 			file << current->sender << "," << current->recipient << ","
-				<< current->subject << "," << current->body << "," 
+				<< current->subject << "," << current->body << ","
 				<< current->priority << "\n";
 			current = current->next;
 		}
@@ -153,10 +153,10 @@ public:
 
 	void viewReceivedEmails(const string& userEmail)
 	{
-		Email* current = top;  // Assuming 'top' points to the first email
+		Email* current = top;
 		bool found = false;
 
-		// Traverse the linked list or stack/queue of emails
+		// Traverse the stack of emails
 		while (current != nullptr)
 		{
 			if (current->recipient == userEmail)
@@ -178,26 +178,21 @@ public:
 
 	void displayRecentEmails(Stack& inbox, const string& loggedInEmail) {
 		Email* current = inbox.peek(); // Start with the most recent email (top of the stack)
-		int index = 1;
 
 		// Loop through the inbox stack and only display emails where the recipient is the logged-in user
-		while (index < 1)
-		{
-			while (current != nullptr) {
-				if (current->recipient == loggedInEmail) {
-					cout << "Email No." << index << endl;
-					cout << ". Sender: " << current->sender << endl;
-					cout << "Subject: " << current->subject << endl;
-					cout << "Body: " << current->body << endl;
-					index++;
-				}
-				current = current->next; // Move to the next email in the stack
+		while (current != nullptr) {
+			if (current->recipient == loggedInEmail) {
+				cout << "Email found:" << endl;
+				cout << "Sender: " << current->sender << endl;
+				cout << "Subject: " << current->subject << endl;
+				cout << "Body: " << current->body << endl;
+				return; // Exit the function after displaying the first matching email
 			}
-
-			if (index == 1) {
-				cout << "No emails found for " << loggedInEmail << ".\n";
-			}
+			current = current->next; // Move to the next email in the stack
 		}
+
+		// If no emails were found for the logged-in user
+		cout << "No emails found for " << loggedInEmail << ".\n";
 	}
 };
 
@@ -322,7 +317,7 @@ public:
 			if (current->sender == userEmail) {
 				cout << index + 1 << ". Sender: " << current->sender
 					<< ", Recipient: " << current->recipient
-					<< ", Subject: " << current->subject 
+					<< ", Subject: " << current->subject
 					<< ", Priority: " << current->priority << endl;
 				index++;
 			}
@@ -337,7 +332,7 @@ public:
 
 class LinkedList {
 	struct Node {
-		std::string email;
+		string email;
 		Node* next;
 	};
 	Node* head;
@@ -345,7 +340,7 @@ class LinkedList {
 public:
 	LinkedList() : head(nullptr) {}
 
-	void add(const std::string& email) {
+	void add(const string& email) {
 		if (contains(email)) return;  // Avoid duplicates
 		Node* newNode = new Node{ email, nullptr };
 		if (!head) {
@@ -360,7 +355,7 @@ public:
 		}
 	}
 
-	bool contains(const std::string& email) const {
+	bool contains(const string& email) const {
 		Node* current = head;
 		while (current) {
 			if (current->email == email) return true;
@@ -373,7 +368,7 @@ public:
 		return head == nullptr;
 	}
 
-	void displayAndChoose(std::string& chosenEmail) {
+	void displayAndChoose(string& chosenEmail) {
 		if (isEmpty()) {
 			cout << "No matches found.\n";
 			return;
@@ -421,9 +416,9 @@ public:
 	Admin() : head(nullptr) {}
 
 	// Load users from file into linked list (temporary storage)
-	void loadUsers(const std::string& filename) {
-		std::ifstream file(filename);
-		std::string email, password, role;
+	void loadUsers(const string& filename) {
+		ifstream file(filename);
+		string email, password, role;
 		while (file.good())
 		{
 			// Read the sender, if the line is empty, skip it
@@ -439,7 +434,7 @@ public:
 	}
 
 	// Add user to linked list (temporary storage)
-	void addUserToList(const std::string& email, const std::string& password, const std::string& role, bool displayMessage = true) {
+	void addUserToList(const string& email, const string& password, const string& role, bool displayMessage = true) {
 		User* newUser = new User{ email, password, role, nullptr };
 		if (head == nullptr) {
 			head = newUser;
@@ -452,28 +447,40 @@ public:
 			current->next = newUser;
 		}
 		if (displayMessage) {
-			std::cout << "User added.\n";
+			cout << "User added.\n";
 		}
 	}
 
 	// Add new user (temporary)
 	void addUser() {
-		std::string email, password, role;
-		std::cout << "Enter email: ";
-		std::cin >> email;
-		std::cout << "Enter password: ";
-		std::cin >> password;
-		std::cout << "Enter role (admin/user): ";
-		std::cin >> role;
+		string email, password, role;
+		cout << "Enter email: ";
+		cin >> email;
+		cout << "Enter password: ";
+		cin >> password;
+
+		// Loop until a valid role is entered
+		while (true) {
+			cout << "Enter role (admin/user): ";
+			cin >> role;
+
+			// Check if the role is valid
+			if (role == "admin" || role == "user") {
+				break; // Valid role, exit the loop
+			}
+			else {
+				cout << "Invalid role. Please enter 'admin' or 'user'.\n";
+			}
+		}
 
 		addUserToList(email, password, role);
 	}
 
 	// Delete user (temporary)
 	void deleteUser() {
-		std::string email;
-		std::cout << "Enter email of user to delete: ";
-		std::cin >> email;
+		string email;
+		cout << "Enter email of user to delete: ";
+		cin >> email;
 
 		User* current = head;
 		User* prev = nullptr;
@@ -487,49 +494,60 @@ public:
 					prev->next = current->next;
 				}
 				delete current;
-				std::cout << "User deleted.\n";
+				cout << "User deleted.\n";
 				return;
 			}
 			prev = current;
 			current = current->next;
 		}
-		std::cout << "User not found.\n";
+		cout << "User not found.\n";
 	}
 
 	// Modify user (temporary)
 	void modifyUser() {
-		std::string email;
-		std::cout << "Enter email of user to modify: ";
-		std::cin >> email;
+		string email;
+		cout << "Enter email of user to modify: ";
+		cin >> email;
 
 		User* current = head;
 		while (current != nullptr) {
 			if (current->email == email) {
-				std::cout << "Enter new password: ";
-				std::cin >> current->password;
-				std::cout << "Enter new role (admin/user): ";
-				std::cin >> current->role;
-				std::cout << "User modified.\n";
+				cout << "Enter new password: ";
+				cin >> current->password;
+				cout << "Enter new role (admin/user): ";
+				cin >> current->role;
+				cout << "User modified.\n";
 				return;
 			}
 			current = current->next;
 		}
-		std::cout << "User not found.\n";
+		cout << "User not found.\n";
 	}
 
 	// Display all users from the temporary list
 	void displayUsers() {
 		User* current = head;
 		if (current == nullptr) {
-			std::cout << "No users loaded.\n";
+			cout << "No users loaded.\n";
 		}
 		else {
-			std::cout << "\nCurrent Users: \n";
+			cout << "\nCurrent Users: \n";
 			while (current != nullptr) {
-				std::cout << "Email: " << current->email << ", Role: " << current->role << "\n";
+				cout << "Email: " << current->email << ", Role: " << current->role << "\n";
 				current = current->next;
 			}
 		}
+	}
+
+	User* getUser(const string& email) {
+		User* current = head; // Assuming you have a head pointer to the start of your user linked list
+		while (current != nullptr) {
+			if (current->email == email) {
+				return current; // Return the user if found
+			}
+			current = current->next; // Move to the next user
+		}
+		return nullptr; // Return nullptr if user not found
 	}
 
 	// Destructor to free memory
@@ -680,35 +698,30 @@ void appendToFile(const string& filename, Email* email)
 }
 
 
-bool login(const string& filename, string& role, string& userEmail) {
-	ifstream file(filename);
-	string password, storedEmail, storedPassword, storedRole;
-
-	if (!file.is_open()) {
-		cout << "Error opening login file.\n";
-		return false;
-	}
+bool login(const string& filename, string& role, string& userEmail, Admin*& admin)
+{
+	string password;
 
 	cout << "Enter email: ";
 	cin >> userEmail;
 	cout << "Enter password: ";
 	cin >> password;
 
-	while (file.good())
-	{
-		getline(file, storedEmail, ',');
-		getline(file, storedPassword, ',');
-		getline(file, storedRole, '\n');
+	cout << "\nSearching for User" << endl;
+	User* current = admin->getUser(userEmail);
 
-		if (storedEmail == userEmail && storedPassword == password)
+	while (current != nullptr)
+	{
+		if (current->email == userEmail && current->password == password)
 		{
-			role = storedRole;
-			userEmail = storedEmail;
-			return true;
+			role = current->role;
+			cout << "Login Successful!" << endl;
+			return true; // login successful
 		}
+		current = current->next; // move to next user in the list
 	}
 
-	file.close();
+	//file.close();
 	cout << "Invalid email or password.\n";
 	return false;
 }
@@ -716,7 +729,7 @@ bool login(const string& filename, string& role, string& userEmail) {
 const int MAX_EMAILS = 1000;
 
 void checkForDuplicates(Stack& inbox) {
-	std::string emails[MAX_EMAILS];
+	string emails[MAX_EMAILS];
 	int emailCount = 0;
 	bool foundDuplicate = false;
 
@@ -725,29 +738,29 @@ void checkForDuplicates(Stack& inbox) {
 	while (!inbox.isEmpty()) {
 		Email* email = inbox.pop();
 
-		std::string emailString = email->sender + "," + email->recipient + "," + email->subject + "," + email->body;
+		string emailString = email->sender + "," + email->recipient + "," + email->subject + "," + email->body;
 
 		bool isDuplicate = false;
 		for (int i = 0; i < emailCount; i++) {
 			if (emails[i] == emailString) {
 				isDuplicate = true;
 				foundDuplicate = true;
-				std::cout << "Duplicate email found: " << email->subject << "\n";
+				cout << "Duplicate email found: " << email->subject << "\n";
 
-				std::cout << "Do you want to view this email? (1 = Yes, 0 = No): ";
+				cout << "Do you want to view this email? (1 = Yes, 0 = No): ";
 				int choice;
-				std::cin >> choice;
-				std::cin.ignore();
+				cin >> choice;
+				cin.ignore();
 
 				if (choice == 1) {
 					displayEmail(email);
 
-					std::cout << "Do you want to remove this email? (1 = Yes, 0 = No): ";
-					std::cin >> choice;
-					std::cin.ignore();
+					cout << "Do you want to remove this email? (1 = Yes, 0 = No): ";
+					cin >> choice;
+					cin.ignore();
 
 					if (choice == 1) {
-						std::cout << "Email deleted!\n";
+						cout << "Email deleted!\n";
 						delete email;
 						email = nullptr;
 						break;
@@ -767,7 +780,7 @@ void checkForDuplicates(Stack& inbox) {
 				tempStack.push(email->sender, email->recipient, email->subject, email->body, email->priority);
 			}
 			else {
-				std::cerr << "Error: Maximum email limit reached.\n";
+				cerr << "Error: Maximum email limit reached.\n";
 				delete email;
 			}
 		}
@@ -782,7 +795,7 @@ void checkForDuplicates(Stack& inbox) {
 	}
 
 	if (!foundDuplicate) {
-		std::cout << "No duplicate emails found.\n";
+		cout << "No duplicate emails found.\n";
 	}
 }
 
@@ -877,7 +890,7 @@ void displayAndChoose(Node* head) {
 				current = current->next;
 			}
 			// Display the chosen email details
-			cout <<endl<< string(55, '=') << endl;
+			cout << endl << string(55, '=') << endl;
 			cout << "\nFrom: " << current->sender << "," << endl;
 			cout << "\nSubject: " << current->subject << endl;
 			cout << "\n\nBody: " << current->body << endl << endl;
@@ -918,10 +931,10 @@ void displayEmailDetails(const string& filename, const string& email, bool isInb
 			cout << string(55, '=') << endl;
 			cout << (isInbox ? "From: " : "To: ") << (isInbox ? sender : recipient) << "," << endl;
 
-			cout << "\nSubject: " << subject << endl;
+			cout << "Subject: " << subject << endl;
 
-			cout << "\n\nBody: " << body << endl << endl;
-			cout << string(55, '=') << endl << endl<<endl;
+			cout << "Body: " << body << endl << endl;
+			cout << string(55, '=') << endl << endl << endl;
 			emailFound = true;
 		}
 	}
@@ -930,10 +943,10 @@ void displayEmailDetails(const string& filename, const string& email, bool isInb
 	if (!emailFound) {
 		cout << endl << string(55, '=') << endl;
 		cout << "Currently nothing inside " << (isInbox ? "inbox" : "outbox") << ".\n";
-		cout << endl << string(55, '=') << endl<<endl;
+		cout << endl << string(55, '=') << endl << endl;
 	}
 
-	
+
 }
 
 void SearchAndRetrieveEmail() {
@@ -1013,8 +1026,7 @@ void SearchAndRetrieveEmail() {
 			break; // Exit the retrieve options loop to return to the main program
 		}
 		else {
-			cout << "\nThank you for using our Email System!" << endl;
-			exit(0);  // Exit the program
+			break;
 		}
 	}
 }
